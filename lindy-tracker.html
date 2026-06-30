@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lindy Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10151a;
+    --ink-2:#161d24;
+    --ink-3:#1d262e;
+    --line:#2b3742;
+    --bone:#e9e4d6;
+    --bone-dim:#b7b2a4;
+    --slate:#7f8c94;
+    --patina:#74b59c;
+    --patina-soft:rgba(116,181,156,0.16);
+    --patina-line:rgba(116,181,156,0.42);
+    --brass:#cda557;
+    --rust:#c5765a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--ink);color:var(--bone);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  body{padding:0 0 64px;}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+  a{color:inherit;}
+
+  /* ---- masthead ---- */
+  header{padding:48px 28px 0;max-width:1180px;margin:0 auto;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--patina);margin:0 0 14px;}
+  h1{font-family:"Fraunces",serif;font-optical-sizing:auto;font-weight:600;
+    font-size:clamp(38px,7vw,76px);line-height:.96;letter-spacing:-.015em;margin:0;color:var(--bone);}
+  h1 em{font-style:italic;color:var(--brass);}
+  .lede{margin:22px 0 0;font-size:16px;line-height:1.6;color:var(--bone-dim);}
+  .lede b{color:var(--bone);font-weight:500;}
+
+  /* ---- stat strip ---- */
+  .stats{display:flex;flex-wrap:wrap;gap:0;margin:34px 0 0;border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);}
+  .stat{flex:1 1 150px;padding:18px 22px;border-right:1px solid var(--line);text-align:center;}
+  .stat:last-child{border-right:none;}
+  .stat .n{font-family:"Fraunces",serif;font-weight:600;font-size:34px;line-height:1;color:var(--patina);}
+  .stat .l{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);margin-top:8px;}
+
+  /* ---- tabs + controls ---- */
+  .toolbar{max-width:1180px;margin:34px auto 0;padding:0 28px;display:flex;flex-wrap:wrap;
+    align-items:flex-end;justify-content:space-between;gap:18px;}
+  .tabs{display:flex;gap:4px;}
+  .tab{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--slate);background:none;border:none;cursor:pointer;
+    padding:10px 16px;border-bottom:2px solid transparent;transition:color .18s,border-color .18s;}
+  .tab:hover{color:var(--bone-dim);}
+  .tab.on{color:var(--bone);border-bottom-color:var(--brass);}
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .ctl-label{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--slate);}
+  select{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--bone);
+    background:var(--ink-2);border:1px solid var(--line);border-radius:2px;padding:7px 10px;cursor:pointer;}
+  select:focus{outline:2px solid var(--patina-line);outline-offset:1px;}
+
+  /* ---- performance panel ---- */
+  .perf{max-width:1180px;margin:30px auto 0;padding:0 28px;}
+  .perf-top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+  .perf-title{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(24px,3.4vw,34px);
+    line-height:1;letter-spacing:-.01em;margin:6px 0 0;color:var(--bone);}
+  .perf-title em{font-style:italic;color:var(--brass);}
+  .perf-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .perf-controls{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    margin:10px 0 0;}
+  .perf-asof{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);
+    margin:0 0 0 4px;display:block;}
+  .view-toggle-btn{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--bone);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:7px 12px;cursor:pointer;transition:all .15s;}
+  .view-toggle-btn:hover{color:var(--bone-dim);border-color:var(--patina-line);}
+  .view-toggle-btn.on{color:var(--ink);background:var(--brass);border-color:var(--brass);font-weight:600;}
+  .perf-table{margin-top:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .perf-row{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;align-items:center;}
+  .perf-row + .perf-row{border-top:1px solid rgba(43,55,66,.55);}
+  .perf-cell{padding:14px 16px;font-family:"IBM Plex Mono",monospace;}
+  .perf-cell.num{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+  .perf-row.head .perf-cell{font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--slate);padding-top:12px;padding-bottom:12px;}
+  .perf-cell .lbl{font-size:13px;color:var(--bone-dim);letter-spacing:.04em;}
+  .perf-cell .lbl{display:block;}
+  .perf-row .lbl{font-size:13px;color:var(--bone);letter-spacing:.03em;}
+  .perf-cell .big{font-family:"Fraunces",serif;font-weight:600;font-size:23px;line-height:1;}
+  .perf-cell .mid{font-size:16px;color:var(--bone-dim);}
+  .perf-cell .ann{font-size:10px;letter-spacing:.08em;color:var(--slate);}
+  .perf-cell .spread{font-size:14px;font-weight:600;}
+  .up{color:var(--patina);} .down{color:var(--rust);}
+  .perf-note{max-width:760px;margin:14px 0 0;font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;line-height:1.7;letter-spacing:.03em;color:var(--slate);}
+
+  /* ---- growth chart ---- */
+  .chart-wrap{margin-top:20px;border-top:1px solid var(--line);padding-top:16px;}
+  .chart-head{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    flex-wrap:wrap;margin-bottom:12px;}
+  .chart-legend{display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.03em;}
+  .leg{display:flex;align-items:center;gap:8px;color:var(--bone-dim);}
+  .leg .sw{display:inline-block;width:18px;border-top:3px solid;}
+  .leg .sw.dash{border-top-style:dashed;}
+  .leg .val{color:var(--bone);font-variant-numeric:tabular-nums;font-weight:600;}
+  .chart-periods{display:flex;gap:4px;}
+  .cper{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;
+    color:var(--slate);background:var(--ink-2);border:1px solid var(--line);border-radius:2px;
+    padding:5px 11px;cursor:pointer;transition:all .15s;}
+  .cper:hover{color:var(--bone-dim);border-color:var(--patina-line);}
+  .cper.on{color:var(--ink);background:var(--brass);border-color:var(--brass);font-weight:600;}
+  .chart-foot{margin-top:8px;}
+  .chart-read{color:var(--slate);font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+    letter-spacing:.06em;font-variant-numeric:tabular-nums;}
+  .compare-section{margin-top:30px;}
+  .compare-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 12px;padding-top:4px;}
+  .compare-select,.compare-reset{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--bone);
+    background:var(--ink-2);border:1px solid var(--line);border-radius:2px;padding:7px 10px;}
+  .compare-select:focus{outline:2px solid var(--patina-line);outline-offset:1px;}
+  .compare-reset{cursor:pointer;color:var(--bone-dim);}
+  .compare-reset:hover{border-color:var(--patina-line);color:var(--bone);}
+  .compare-chart{margin-top:14px;border-top:1px solid var(--line);padding-top:16px;}
+  .compare-legend{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.03em;margin-bottom:10px;}
+  .compare-note{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--slate);padding:8px 0 4px;}
+  svg.chart{display:block;width:100%;height:auto;overflow:visible;}
+  .chart .grid{stroke:rgba(43,55,66,.55);stroke-width:1;}
+  .chart .axlab{fill:var(--slate);font-family:"IBM Plex Mono",monospace;font-size:10px;}
+  .chart .axtitle{fill:var(--slate);font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+    letter-spacing:.18em;text-transform:uppercase;}
+  .chart .lineL{fill:none;stroke:var(--patina);stroke-width:2.5;
+    stroke-linejoin:round;stroke-linecap:round;}
+  .chart .lineS{fill:none;stroke:var(--bone-dim);stroke-width:1.8;stroke-dasharray:5 4;
+    stroke-linejoin:round;stroke-linecap:round;}
+  .chart .endL{fill:var(--patina);font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;}
+  .chart .endS{fill:var(--bone-dim);font-family:"IBM Plex Mono",monospace;font-size:11px;}
+  .chart .guide{stroke:var(--brass);stroke-width:1;stroke-dasharray:3 3;}
+  .chart .dotL{fill:var(--patina);stroke:var(--ink);stroke-width:1.5;}
+  .chart .dotS{fill:var(--bone-dim);stroke:var(--ink);stroke-width:1.5;}
+  .perf-tbl-head{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);margin:40px 0 0;}
+
+  /* ---- price cell ---- */
+  .pcell{padding:9px 14px 9px 0;display:flex;flex-direction:column;gap:2px;
+    align-items:flex-end;justify-content:center;text-align:right;min-width:0;}
+  .px{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--bone);font-variant-numeric:tabular-nums;}
+  .pchg{font-family:"IBM Plex Mono",monospace;font-size:11px;font-variant-numeric:tabular-nums;}
+
+  /* ---- sector chips ---- */
+  .chips{max-width:1180px;margin:16px auto 0;padding:0 28px;display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.04em;
+    color:var(--bone-dim);background:var(--ink-2);border:1px solid var(--line);
+    border-radius:999px;padding:5px 13px;cursor:pointer;transition:all .15s;}
+  .chip:hover{border-color:var(--patina-line);color:var(--bone);}
+  .chip.on{background:var(--patina-soft);border-color:var(--patina-line);color:var(--patina);}
+
+  /* ---- timeline axis ---- */
+  .scene{max-width:1180px;margin:26px auto 0;padding:0 28px;}
+  .axis{position:relative;height:26px;margin-left:calc(var(--lane) + var(--pcol));
+    margin-right:var(--agecol);border-bottom:1px solid var(--line);}
+  .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--line);}
+  .tick span{position:absolute;top:1px;left:8px; /* Changed from 50% to 6px */
+    font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;
+    color:var(--slate);white-space:nowrap;}
+  .tick.now span{left:auto;right:0;transform:none;}   /* rightmost label hugs the edge */
+
+  /* ---- rows ---- */
+  :root{--lane:252px;--pcol:104px;--agecol:72px;}
+  .row{display:grid;grid-template-columns:var(--lane) var(--pcol) 1fr var(--agecol);align-items:center;
+    border-bottom:1px solid rgba(43,55,66,.55);min-height:52px;}
+  .row:hover{background:rgba(116,181,156,.045);}
+  .meta{padding:9px 18px 9px 0;display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .meta .top{display:flex;align-items:baseline;gap:9px;min-width:0;}
+  .nm{font-family:"Fraunces",serif;font-weight:500;font-size:16.5px;color:var(--bone);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tk{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--patina);
+    border:1px solid var(--patina-line);border-radius:2px;padding:1px 5px;flex:none;}
+  .sub{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.05em;
+    color:var(--slate);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .track{position:relative;height:100%;min-height:52px;}
+  .bar{position:absolute;top:50%;transform:translateY(-50%);height:13px;border-radius:2px;}
+  .bar.lived{background:linear-gradient(90deg,var(--patina) 0%,#5e9c84 100%);
+    box-shadow:0 0 0 1px rgba(116,181,156,.25);}
+  .bar.shadow{background:repeating-linear-gradient(90deg,var(--patina-soft) 0 6px,transparent 6px 12px);
+    border:1px solid var(--patina-line);border-left:none;}
+  .nowmark{position:absolute;top:0;bottom:0;width:1px;background:rgba(205,165,87,.35);}
+  .agecell{display:flex;align-items:center;padding:0 6px 0 11px;
+    border-left:1px solid rgba(205,165,87,.28);}
+  .agechip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;
+    color:var(--ink);font-weight:600;background:var(--brass);border-radius:2px;padding:1px 7px;
+    white-space:nowrap;pointer-events:none;}
+  .row{cursor:pointer;}
+  .row.open{border-bottom-color: transparent;}
+
+  /* ---- expandable detail ---- */
+  .detail{display:none;border-bottom:1px solid rgba(43,55,66,.55);}
+  .detail.open{display:block;}
+  .detail-inner{padding:22px 8px 28px 0;}
+  .detail-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:34px;align-items:start;}
+  .detail-bio{margin:0;font-size:14px;line-height:1.7;color:var(--bone-dim);max-width:48ch;}
+  .detail-facts{display:flex;flex-wrap:wrap;gap:12px 30px;margin-top:18px;}
+  .detail-rets{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 18px;
+    margin-top:16px;max-width:380px;}
+  .fct{display:flex;flex-direction:column;gap:3px;}
+  .fct span{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--slate);}
+  .fct b{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--bone);font-weight:500;
+    font-variant-numeric:tabular-nums;}
+  .proj{margin-top:22px;max-width:340px;}
+  .proj-cap{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);}
+  .proj-bar{position:relative;display:flex;height:14px;margin-top:8px;}
+  .pb-lived{width:50%;background:linear-gradient(90deg,var(--patina),#5e9c84);
+    border-radius:2px 0 0 2px;box-shadow:0 0 0 1px rgba(116,181,156,.25);}
+  .pb-shadow{width:50%;background:repeating-linear-gradient(90deg,var(--patina-soft) 0 6px,transparent 6px 12px);
+    border:1px solid var(--patina-line);border-left:none;border-radius:0 2px 2px 0;}
+  .pb-now{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--brass);}
+  .proj-lab{display:flex;justify-content:space-between;margin-top:6px;
+    font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--slate);}
+  .proj-lab .nowlab{color:var(--brass);}
+  .proj-note{margin:10px 0 0;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+    line-height:1.6;color:var(--slate);}
+  .pchart-title{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);margin-bottom:10px;}
+  .pchart .priceline{fill:none;stroke:var(--patina);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+  .pchart .pricearea{fill:var(--patina-soft);stroke:none;}
+  .pchart .dotL{fill:var(--patina);stroke:var(--ink);stroke-width:1.5;}
+  .nochart{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--slate);padding:20px 0;}
+
+  /* tooltip */
+  .tip{position:fixed;z-index:50;pointer-events:none;opacity:0;transition:opacity .12s;
+    background:var(--ink-3);border:1px solid var(--patina-line);border-radius:4px;
+    padding:11px 13px;max-width:280px;font-size:12.5px;line-height:1.5;color:var(--bone-dim);
+    box-shadow:0 14px 40px rgba(0,0,0,.5);}
+  .tip h4{font-family:"Fraunces",serif;font-weight:600;font-size:15px;color:var(--bone);margin:0 0 5px;}
+  .tip .r{display:flex;justify-content:space-between;gap:18px;margin-top:3px;}
+  .tip .r span:first-child{color:var(--slate);font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;}
+  .tip .r span:last-child{font-family:"IBM Plex Mono",monospace;color:var(--bone);}
+  .tip .note{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);color:var(--bone-dim);}
+
+  /* industries tab */
+  .ind-head{display:grid;grid-template-columns:var(--lane) var(--pcol) 1fr var(--agecol);
+    padding:0; position:relative; top:16px; /* Removed bottom padding and pushed down */
+    font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);}
+  .ind-head div:last-child{padding-left:2px;}
+  .ind-head .rt{text-align:right;padding-right:14px;}
+  .ind-head div.agehead{color:var(--brass); padding-left: 20px;}
+  /* industries: label + full-width track, no price/age columns */
+  .ind-head.ind-head2{grid-template-columns:var(--lane) 1fr;}
+  .row.irow{grid-template-columns:var(--lane) 1fr;cursor:default;}
+  .axis.iaxis{margin-left:var(--lane);margin-right:0;}
+
+  footer{max-width:1180px;margin:46px auto 0;padding:24px 28px 0;border-top:1px solid var(--line);
+    font-size:12.5px;line-height:1.65;color:var(--slate);}
+  footer b{color:var(--bone-dim);font-weight:500;}
+  .hidden{display:none;}
+  @media(max-width:720px){
+    :root{--lane:150px;--pcol:76px;--agecol:58px;}
+    .nm{font-size:14px;} .stat{flex-basis:120px;}
+    .px{font-size:12px;} .pchg{font-size:10px;}
+    .perf-cell{padding:11px 9px;} .perf-cell .big{font-size:18px;}
+    .detail-grid{grid-template-columns:1fr;gap:22px;}
+    .detail-inner{padding:18px 4px 22px 0;}
+    .bar-wrap-note{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Lindy <em>Index</em></h1>
+  <p class="lede">For things that do not perish, the past predicts the future. A company that has already traded through <b>two centuries</b> of wars and panics has, by the Lindy heuristic, a fair claim to roughly <b>two more</b>. Click on any name to reveal its full price history and biography.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section class="perf">
+  <div class="perf-heading">
+    <h2 class="perf-title">The Lindy Index <em>vs.</em> the S&amp;P 500</h2>
+    <button id="perfViewToggle" class="view-toggle-btn" type="button" data-view="compare">Compare companies</button>
+  </div>
+  <div class="perf-controls">
+    <div class="perf-asof mono" id="perfAsof"></div>
+  </div>
+  <div id="perfViewTable">
+    <div class="perf-tbl-head">Trailing returns to today</div>
+    <div class="perf-table" id="perfTable"></div>
+    <p class="perf-note">An equal-weight basket of all <span id="perfN"></span> names below, each period measured from its own start. Price return only &mdash; dividends, which these mature names pay heavily, are excluded, so true total returns run higher. The charts and pricing data do not represent a live feed. Nothing here is investment advice.</p>
+  </div>
+  <div id="perfViewCompare" class="hidden">
+    <div class="compare-controls">
+      <label class="ctl-label" for="compareA">Company 1</label>
+      <select id="compareA" class="compare-select"></select>
+      <label class="ctl-label" for="compareB">Company 2</label>
+      <select id="compareB" class="compare-select"></select>
+      <label class="ctl-label" for="compareC">Company 3</label>
+      <select id="compareC" class="compare-select"></select>
+      <button id="compareReset" class="compare-reset" type="button">Reset</button>
+    </div>
+    <div class="compare-chart" id="compareChart"></div>
+  </div>
+</section>
+
+<div class="toolbar">
+  <div class="controls" id="coControls">
+    <span class="ctl-label">Order</span>
+    <select id="sort">
+      <option value="old">Oldest first</option>
+      <option value="young">Youngest first</option>
+      <option value="az">A to Z</option>
+    </select>
+  </div>
+</div>
+
+<div class="chips" id="chips"></div>
+
+<!-- COMPANIES -->
+<section id="companies" class="scene">
+  <div class="ind-head"><div>The company</div><div class="rt">Last &middot; 1d</div><div></div><div class="agehead">Now</div></div>
+  <div class="axis" id="axis"></div>
+  <div id="rows"></div>
+</section>
+
+<div class="tip" id="tip"></div>
+
+<footer>
+  <b>How to read it:</b> Age is measured from each firm's founding year, not its IPO date. "Lindy span" is simply that age projected forward as a rough life expectancy. Sectors map to the trade that drives their demand, so you can weigh both signals at once: a long-lived company sitting inside an ancient-demand industry is where the Lindy effect is likely to be strongest.<br><br>
+  <b>Two caveats:</b> The Lindy effect screens for survivorship, so it tilts toward more mature, slower-growth names. Prices and returns are snapshots pulled from Yahoo Finance (dated above), not a live feed. Not investment advice.
+</footer>
+
+<script>
+const NOW = 2026;
+
+let PRICES;  // price snapshot loaded from prices.json at runtime (run pull_prices.py to refresh)
+
+// Curated register. Founding years are company origins; tickers verified for US listings.
+const COMPANIES = [
+  {n:"Bank of New York Mellon", t:"BK", y:1784, s:"Banking & credit", note:"The oldest continuously operating bank in the United States.", bio:"Founded in 1784 as the Bank of New York, with Alexander Hamilton drafting its constitution, it was among the very first stocks traded on the New York Stock Exchange. It helped finance the young republic's debt and infrastructure, and through two centuries of consolidation — capped by the 2007 merger with Mellon Financial — became one of the world's largest custody and asset-servicing banks."},
+  {n:"State Street", t:"STT", y:1792, s:"Banking & credit", note:"The second-oldest continuously operating bank in the U.S., chartered the same year the dollar was coined.", bio:"State Street traces its roots to Boston's Union Bank, chartered in 1792. After more than a century as a commercial bank, it reinvented itself as a custodian and asset manager. In 1993, it launched the first U.S. exchange-traded fund, the SPDR S&P 500 (SPY) — now a fixture of modern markets."},
+  {n:"JPMorgan Chase", t:"JPM", y:1799, s:"Banking & credit", note:"Traces its roots to The Manhattan Company, a water utility that became a bank.", bio:"Its lineage begins with The Manhattan Company, founded in 1799 with the purpose of piping clean water to Lower Manhattan, but chartered with a clause that let it use its surplus capital for banking transactions. Over two centuries it absorbed J.P. Morgan & Co., Chase Manhattan, Bank One, and others to become the largest bank in the United States."},
+  {n:"DuPont", t:"DD", y:1802, s:"Metals & materials", note:"Began as a gunpowder mill on the Brandywine, now one of the world's largest science and chemical corporations.", bio:"French émigré Éleuthère Irénée du Pont began milling gunpowder on Delaware's Brandywine Creek in 1802. The company would later become the innovating force behind neoprene, nylon, Teflon, and Kevlar. After its 2017 Dow merger and subsequent splits, it now concentrates on specialty and electronic materials."},
+  {n:"Colgate-Palmolive", t:"CL", y:1806, s:"Soap & personal care", note:"Started as a starch, soap, and candle shop in New York City.", bio:"William Colgate opened a starch, soap and candle works in New York City in 1806. In 1896, his son Samuel Colgate introduces Colgate's Ribbon Dental Cream, the first toothpaste to be packaged in a collapsible tube. It merged with Palmolive-Peet in 1928 to become a global leader in oral, household, and personal care."},
+  {n:"Citigroup", t:"C", y:1812, s:"Banking & credit", note:"Chartered as the City Bank of New York to finance commerce and manage wartime disruption.", bio:"Chartered in 1812 as the City Bank of New York, it financed Manhattan's merchants and pioneered overseas branch banking in the early 20th century. The 1998 merger with Travelers created Citigroup, historically significant for its combination of banking and insurance."},
+  {n:"Deere & Company", t:"DE", y:1837, s:"Agriculture & food", note:"Began when a blacksmith from Vermont created the first commercially successful self-scouring steel plow broke.", bio:"In 1837, the blacksmith John Deere forged a self-scouring steel plow to cut through sticky prairie soil. The company grew into the world's leading maker of agricultural machinery, and its logo remains the oldest continuously used trademark by any Fortune 500 company."},
+  {n:"Procter & Gamble", t:"PG", y:1837, s:"Soap & personal care", note:"Founded after an English candlemaker and an Irish soapmaker married into the same Cincinnati family.", bio:"Candle-maker William Procter and soap-maker James Gamble, brothers-in-law from Cincinnati, formed their partnership in 1837. Ivory soap, Tide, and a large roster of brands made P&G a pioneer of modern advertising, brand management, and consumer-goods conglomeration."},
+  {n:"Stanley Black & Decker", t:"SWK", y:1843, s:"Metals & materials", note:"Began as Stanley's Bolt Manufactory in New Britain, Connecticut.", bio:"Frederick Stanley opened a wrought-iron hardware shop in New Britain, Connecticut in 1843. A series of mergers, culminating in the 2010 union with Black & Decker, made it the world's largest maker of hand and power tools."},
+  {n:"Church & Dwight", t:"CHD", y:1846, s:"Agriculture & food", note:"Began as a small baking soda operation in John Dwight’s New York City kitchen.", bio:"Founded in 1846 by brothers-in-law Dr. Austin Church and John Dwight, the company built its fortune on Arm & Hammer baking soda. The brand was extended significantly beginning in the 1980s, acquiring many other names in household and personal care."},
+  {n:"Altria", t:"MO", y:1847, s:"Tobacco & vice", note:"The U.S. branch of Philip Morris International, which began as a single tobacconist's shop in London.", bio:"The company traces its roots to 1847, when Philip Morris opened a small tobacco shop on London’s Bond Street. It grew into a global empire, revolutionized modern cigarette marketing with Marlboro, and split into two separate entities in 2008: Philip Morris USA (Altria) and Philip Morris International."},
+  {n:"Pfizer", t:"PFE", y:1849, s:"Medicine & apothecary", note:"Founded in 1849 by German cousins Charles Pfizer and Charles Erhart in Brooklyn, New York.", bio:"Cousins Charles Pfizer and Charles Erhart opened a fine-chemicals business in Brooklyn in 1849, known for its production of citric acid. Wartime mass-production of penicillin — and later, Lipitor, Advil, and the COVID-19 vaccine — made it one of the largest drug makers in the world."},
+  {n:"Corning", t:"GLW", y:1851, s:"Glass", note:"Founded in 1851 by Amory Houghton, the company’s roots span from Massachusetts to New York.", bio:"After moving from Somerville, Massachusetts; to Brooklyn, New York; and to Corning, New York, the Corning Flint Glass Co. created encasements for Thomas Edison's early light bulbs. The company’s history of innovation spans over 170 years."},
+  {n:"Wells Fargo", t:"WFC", y:1852, s:"Banking & credit", note:"Founded in 1852 by Henry Wells and William G. Fargo, Wells Fargo started as a secure courier and banking operation to serve California’s Gold Rush.", bio:"Henry Wells and William Fargo founded the express-and-banking company in 1852 to serve California during the Gold Rush, hauling freight and gold dust by stagecoach. Amid the 2008 financial crisis, it acquired Wachovia, transforming into a massive, coast-to-coast retail banking franchise."},
+  {n:"Anheuser-Busch InBev", t:"BUD", y:1852, s:"Brewing & spirits", note:"A struggling St. Louis brewery in the 1850s — transformed by Eberhard Anheuser and his son-in-law Adolphus Busch", bio:"The American brewery dates to 1852 in St. Louis, but it wasn’t until 1864 when Adolphus Busch pioneered pasteurization and refrigerated railcars to ship beer across America without spoiling. A 2008 takeover by Belgium's InBev, and the later SABMiller deal, created the world's largest brewer."},
+  {n:"Bristol-Myers Squibb", t:"BMY", y:1858, s:"Medicine & apothecary", note:"Formed through the merger of two 19th-century American pharmaceutical companies.", bio:"Bristol-Myers Squibb was formed through the historic 1989 merger of two long-standing 19th-century American pharmaceutical companies: Bristol-Myers and E.R. Squibb & Sons. Today, it is a leading global biopharma company specializing in groundbreaking oncology, cardiovascular, and immunology treatments."},
+  {n:"Union Pacific", t:"UNP", y:1862, s:"Transport & freight", note:"Chartered by Lincoln to lay the eastern half of the transcontinental railroad.", bio:"Chartered under Lincoln's 1862 Pacific Railway Act, Union Pacific built the eastern portion of the first transcontinental railroad, meeting the Central Pacific at Promontory, Utah in 1869. It remains one of North America's largest freight railroads."},
+  {n:"General Mills", t:"GIS", y:1866, s:"Agriculture & food", note:"Traces its roots to 1866 when Cadwallader Washburn built his first flour mill in Minneapolis, Minnesota.", bio:"Originating as the Washburn-Crosby company, it became known as General Mills after its 1928 consolidation with several other regional flour milling companies. It has since diversified heavily, but remains a pioneer in the packaged food industry."},
+  {n:"Sherwin-Williams", t:"SHW", y:1866, s:"Metals & materials", note:"Founded in 1866, Sherwin-Williams created the first ready-mixed paint in a resealable can.", bio:"In 1866, Henry Sherwin used his life savings to invest in a Cleveland paint and furnishing supply business. Four years later, he partnered with Edward Williams and A.T. Osborn, to form Sherwin, Williams, & Co. By the 1920s, the company officially became the largest coatings manufacturer in the United States."},
+  {n:"Campbell Soup", t:"CPB", y:1869, s:"Agriculture & food", note:"Campbell's transformed the food industry when chemist John T. Dorrance invented condensed soup in 1897.", bio:"Started in 1869 in Camden, New Jersey, the company achieved a breakthrough in creating condensed soup. By removing water, the company drastically lowered the price of a can from 30 to 10 cents. In 1990, Campbell's soups won a Gold Medallion at the Paris Exposition, which has been featured on their label ever since."},
+  {n:"Brown-Forman", t:"BF.B", y:1870, s:"Brewing & spirits", note:"Founded in Louisville, Kentucky, in 1870, it revolutionized the industry by pioneering the sale of bourbon in sealed glass bottles.", bio:"George Garvin Brown began selling bourbon in sealed glass bottles in Louisville in 1870 to guarantee its quality at a time of widespread tampering. In 1956, it acquired the Jack Daniel's Distillery."},
+  {n:"ExxonMobil", t:"XOM", y:1870, s:"Energy & fuel", note:"The largest surviving heir of John D. Rockefeller's Standard Oil.", bio:"Formed in 1999 when Exxon and Mobil — two direct successors of John D. Rockefeller's 1870 Standard Oil monopoly — merged. Today, ExxonMobil operates globally across oil, gas, chemical, and lubricant divisions."},
+  {n:"Kimberly-Clark", t:"KMB", y:1872, s:"Soap & personal care", note:"Founded in Neenah, Wisconsin, in 1872, Kimberly-Clark transformed from a regional paper mill into a global consumer products powerhouse.", bio:"A Wisconsin paper miller founded in 1872, it eventually developed ‘cellucotton’ in 1914, a highly absorbent cotton substitute that the U.S. Army used for surgical dressings during World War I. It used this material to develop disposable facial tissues, feminine hygiene products, and modern diapers."},
+  {n:"Eli Lilly", t:"LLY", y:1876, s:"Medicine & apothecary", note:"Founded in 1876 in Indianapolis, Indiana, by Civil War veteran and pharmaceutical chemist Colonel Eli Lilly.", bio:"Pharmacist and Civil War colonel Eli Lilly founded the firm in Indianapolis in 1876, insisting on carefully tested, properly labeled medicines. It was first to mass-produce insulin in the 1920s and, a century later, became a leader in diabetes and obesity drugs."},
+  {n:"Chevron", t:"CVX", y:1879, s:"Energy & fuel", note:"Born as Pacific Coast Oil in 1979, another fragment of the Standard Oil estate.", bio:"Founded as Pacific Coast Oil in 1879, it became Standard Oil of California after Rockefeller's trust acquired it, then became independent again following the 1911 breakup. The 1984 merger with Gulf Oil and the 2001 merger with Texaco helped make Chevron a global energy supermajor."},
+  {n:"PPG Industries", t:"PPG", y:1883, s:"Glass", note:"The first commercially successful plate-glass works in the US.", bio:"Pittsburgh Plate Glass, founded in 1883, was the first commercially successful U.S. plate-glass maker. It diversified into paints, coatings and specialty materials and now ranks among the world's largest coatings companies."},
+  {n:"Johnson & Johnson", t:"JNJ", y:1886, s:"Medicine & apothecary", note:"Made the first mass-produced sterile surgical dressings.", bio:"Founded in New Brunswick, New Jersey in 1886, Johnson & Johnson made the first mass-produced sterile surgical dressings as antiseptic surgery took hold. It grew into a diversified health-care giant; in 2023 it spun off its consumer arm (Kenvue) to focus on pharmaceuticals and medical devices."},
+  {n:"Coca-Cola", t:"KO", y:1886, s:"Brewing & spirits", note:"Began as a pharmacist's syrup poured over soda water in Atlanta.", bio:"Atlanta pharmacist John Pemberton concocted the formula in 1886, marketing it as a temperance drink and nerve tonic. Businessman Asa Candler's marketing - and an ingenious franchised bottling system - turned it into the most recognized beverage brand on earth"},
+  {n:"McCormick", t:"MKC", y:1889, s:"Agriculture & food", note:"Founded by 25 year old Willoughby M. McCormick in 1889.", bio:"Founded in Baltimore, McCormick began selling root beer, fruit syrups, and flavor extracts door-to-door from a cellar. Today, the company is a global leader in spices, herbs and seasonings."},
+  {n:"Merck & Co.", t:"MRK", y:1891, s:"Medicine & apothecary", note:"The American arm of a German apothecary dating to the 1660s.", bio:"The U.S. arm of Merck - a small apothecary shop in Darmstadt, Germany - was established in 1891 and became fully independent American property after World War I. It is now one of the largest research-driven drug makers, anchored by vaccines and oncology."},
+  {n:"Hormel Foods", t:"HRL", y:1891, s:"Agriculture & food", note:"Founded in 1891 as a small, independent pork-packing plant", bio:"George Hormel founded his meatpacking business in Austin, Minnesota in 1891. Its invention of SPAM in 1937 made the brand a global icon and wartime staple, and the company has since broadened into branded and convenience foods."},
+  {n:"GE Aerospace", t:"GE", y:1892, s:"Transport & freight", note:"A world-leading provider of jet engines, systems, and services for commercial and military aircraft.", bio:"General Electric formed in 1892 from the merger of Edison's electric company with Thomson-Houston. After decades as a sprawling conglomerate spanning appliances, finance and media, GE split into three companies in 2023-24, with this one operating as an independent aerospace powerhouse."},
+  {n:"Hershey", t:"HSY", y:1894, s:"Agriculture & food", note:"Established in 1894 by Milton S. Hershey", bio:"Inspired by German chocolate-making machinery at the 1893 World’s Columbian Exposition, Hershey sold his Pennsylvania caramel company for $1 million to focus entirely on mass-producing affordable milk chocolate."},
+  {n:"J.M. Smucker", t:"SJM", y:1897, s:"Agriculture & food", note:"Started pressing apple butter from a single cider mill in Ohio.", bio:"Jerome Smucker began pressing apple butter from a cider mill in Orrville, Ohio in 1897. The family-led company grew through jams and jellies and later major acquisitions in coffee (Folgers) and pet food."},
+  {n:"3M", t:"MMM", y:1902, s:"Metals & materials", note:"A failed mining venture that pivoted to sandpaper, then tape, then everything.", bio:"Founded in 1902 as Minnesota Mining and Manufacturing to mine corundum for grinding wheels, but 3M found the deposit nearly worthless and pivoted to sandpaper. A culture of relentless invention produced masking tape, Scotch tape, Post-it Notes and tens of thousands of other products."},
+  {n:"Archer-Daniels-Midland", t:"ADM", y:1902, s:"Agriculture & food", note:"This linseed crushing company was founded in Minneapolis by John W. Daniels.", bio:"Archer-Daniels-Midland began in 1902 crushing flaxseed for linseed oil. It grew into one of the world's largest agricultural processors and commodity traders, turning grain and oilseeds into food ingredients, animal feed and biofuel."},  {n:"Newmont", t:"NEM", y:1921, s:"Gold & precious metals", note:"The world's largest gold miner, in the oldest store of value there is.", bio:"Founded in 1921 as a holding company by Colonel William Boyce Thompson, Newmont gradually concentrated on mining. Through major deals including Goldcorp and Newcrest it became the world's largest gold producer — a leveraged play on humanity's oldest store of value."},
+  {n:"Newmont", t:"NEM", y:1921, s:"Gold & precious metals", note:"The world's largest gold miner, founded as a holding company in 1921.", bio:"Founded by Colonel William Boyce Thompson, Newmont began concentrating on mining in 1929. Through major deals including Goldcorp and Newcrest, it became the world's largest gold producer."},
+  {n:"Caterpillar", t:"CAT", y:1925, s:"Metals & materials", note:"Established in 1925 from the merger of Holt Manufacturing and C.L. Best Tractor Co.", bio:"The Holt and Best tractor companies were pioneers of the track-laying 'caterpillar' crawler that spread loads across soft ground. After their merger, the company went on to become the world's leading maker of construction and mining equipment."},
+];
+
+// The ancient-trade dimension: how far back the underlying human demand runs.
+const INDUSTRIES = [
+  {n:"Agriculture & food", start:-10000, note:"Fundamental to human survival, demand is ever-present."},
+  {n:"Brewing & spirits", start:-7000, note:"Fermented drink is one of humanity's oldest manufactured goods."},
+  {n:"Metals & materials", start:-6000, note:"Provides many of the raw materials required for global infrastructure, manufacturing, and technological development."},
+  {n:"Gold & precious metals", start:-4000, note:"Historically serves as a primary store of value and medium of exchange."},
+  {n:"Tobacco & vice", start:-4000, note:"A stubbornly durable category."},
+  {n:"Energy & fuel", start:-4000, note:"The critical utility underpinning all global economic activity."},
+  {n:"Glass", start:-3500, note:"Beginning in ancient Mesopotamia and Egypt, it now has critical applications in modern architecture, optics, and consumer electronics."},
+  {n:"Medicine & apothecary", start:-3000, note:"Demonstrates uninterrupted historical demand, evolving continuously from early pharmacopoeia to modern biotechnology."},
+  {n:"Soap & personal care", start:-2800, note:"Rooted in fundamental public health and sanitation requirements, demand has persisted for millennia."},
+  {n:"Banking & credit", start:-2000, note:"The essential infrastructure for capital allocation. Core mechanisms of deposit-taking, lending, and risk management have facilitated economic expansion since antiquity."},
+  {n:"Transport & freight", start:-2000, note:"The logistical backbone of global commerce. From ancient trade routes to modern supply chains, it enables the movement of goods and people."},
+];
+
+const SECTORS = [...new Set(COMPANIES.map(c=>c.s))].sort();
+let activeSectors = new Set();
+
+// ---- timeline scales ----
+const maxAge = Math.max(...COMPANIES.map(c=>NOW-c.y));
+const C_START = 1750, C_END = NOW;                          // companies axis: founding -> now, bars run flush to the right edge
+
+const pct = (val, lo, hi) => ((val - lo) / (hi - lo)) * 100;
+
+function el(tag, cls, html){const e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e;}
+
+// ---- stats ----
+function renderStats(){
+  const ages = COMPANIES.map(c=>NOW-c.y).sort((a,b)=>a-b);
+  const median = ages[Math.floor(ages.length/2)];
+  const oldest = COMPANIES.reduce((a,b)=> (NOW-a.y)>(NOW-b.y)?a:b);
+  const data=[
+    [COMPANIES.length,"names tracked"],
+    [NOW-oldest.y+" yrs",oldest.n.split(" ")[0]+" tops the list"],
+    [median+" yrs","median age"],
+    [SECTORS.length,"ancient trades"],
+  ];
+  const box=document.getElementById("stats"); box.innerHTML="";
+  data.forEach(([n,l])=>{const s=el("div","stat"); s.appendChild(el("div","n",n)); s.appendChild(el("div","l",l)); box.appendChild(s);});
+}
+
+// ---- performance panel ----
+function fmtPct(x){return (x>=0?"+":"")+(x*100).toFixed(1)+"%";}
+function annualized(x,yrs){return Math.pow(1+x,1/yrs)-1;}
+function renderPerf(){
+  document.getElementById("perfAsof").textContent="as of "+PRICES.asof;
+  document.getElementById("perfN").textContent=PRICES.n;
+  const periods=[["ytd","YTD 2026",null],["1y","1 year",1],["5y","5 years",5],["10y","10 years",10]];
+  const tbl=document.getElementById("perfTable"); tbl.innerHTML="";
+  const head=el("div","perf-row head");
+  ["Period","Lindy Index","S&P 500","Spread"].forEach((h,i)=>head.appendChild(el("div","perf-cell"+(i?" num":""),h)));
+  tbl.appendChild(head);
+  periods.forEach(([k,label,yrs])=>{
+    const li=PRICES.index[k], sp=PRICES.sp500.ret[k], spread=li-sp;
+    const row=el("div","perf-row");
+    row.appendChild(el("div","perf-cell","<span class='lbl'>"+label+"</span>"));
+    let liH="<span class='big "+(li>=0?"up":"down")+"'>"+fmtPct(li)+"</span>";
+    let spH="<span class='mid'>"+fmtPct(sp)+"</span>";
+    if(yrs&&yrs>1){
+      liH+="<span class='ann'>"+fmtPct(annualized(li,yrs))+" /yr</span>";
+      spH+="<span class='ann'>"+fmtPct(annualized(sp,yrs))+" /yr</span>";
+    }
+    row.appendChild(el("div","perf-cell num",liH));
+    row.appendChild(el("div","perf-cell num",spH));
+    const pts=(Math.abs(spread)*100).toFixed(1);
+    row.appendChild(el("div","perf-cell num","<span class='spread "+(spread>=0?"up":"down")+"'>"+(spread>=0?"▲ ":"▼ ")+pts+" pts</span>"));
+    tbl.appendChild(row);
+  });
+}
+
+// ---- compare chart ----
+const COMPARE_COLORS=["#74b59c","#cda557","#c5765a"];
+const DEFAULT_COMPARE_TICKERS=["BK","STT","JPM"];
+
+function populateComparisonSelectors(){
+  const selects=document.querySelectorAll(".compare-select");
+  selects.forEach((sel,idx)=>{
+    const current=sel.value || DEFAULT_COMPARE_TICKERS[idx] || "";
+    sel.innerHTML="<option value=''>Select a company</option>";
+    COMPANIES.forEach(c=>{
+      const opt=document.createElement("option");
+      opt.value=c.t; opt.textContent=c.n; sel.appendChild(opt);
+    });
+    sel.value=current;
+  });
+}
+
+function renderComparisonChart(){
+  const box=document.getElementById("compareChart");
+  if(!PRICES||!PRICES.hist||!PRICES.hist.by){
+    box.innerHTML="<div class='compare-note'>Price history will appear here once the data is loaded.</div>";
+    return;
+  }
+
+  const selectedTickers=[...document.querySelectorAll(".compare-select")].map(sel=>sel.value).filter(Boolean);
+  if(selectedTickers.length===0){
+    box.innerHTML="<div class='compare-note'>Pick up to three Lindy companies to compare their growth.</div>";
+    return;
+  }
+
+  const series=selectedTickers.map((tk,i)=>{
+    const company=COMPANIES.find(c=>c.t===tk);
+    const vals=PRICES.hist.by[tk]||[];
+    const base=vals.find(v=>v!=null&&!Number.isNaN(v))||1;
+    const normalized=vals.map(v=>v!=null&&!Number.isNaN(v)?(100*v/base):null);
+    return {tk, name:company?company.n:tk, values:normalized, color:COMPARE_COLORS[i]};
+  }).filter(s=>s.values.length);
+
+  if(series.length===0){
+    box.innerHTML="<div class='compare-note'>No comparable price history is available for the selected names.</div>";
+    return;
+  }
+
+  const labels=PRICES.hist.months||[];
+  const W=940,H=340,padL=66,padR=54,padT=18,padB=56;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const allValues=series.flatMap(s=>s.values.filter(v=>v!=null));
+  const vmin=Math.min(...allValues,100), vmax=Math.max(...allValues,100);
+  const raw=((vmax-vmin)||1)/4, mag=Math.pow(10,Math.floor(Math.log10(raw)));
+  const step=[1,2,2.5,5,10].map(m=>m*mag).find(s=>s>=raw)||10*mag;
+  const lo=Math.floor(vmin/step)*step, hi=Math.ceil(vmax/step)*step;
+  const X=i=> padL + (labels.length<=1?0:(i/(labels.length-1))*plotW);
+  const Y=v=> padT + plotH - ((v-lo)/(hi-lo))*plotH;
+
+  const makePath=(values)=>{
+    let d="";
+    values.forEach((v,i)=>{
+      if(v==null) return;
+      const x=X(i).toFixed(1), y=Y(v).toFixed(1);
+      d += (d ? "L" : "M") + x + " " + y + " ";
+    });
+    return d.trim();
+  };
+
+  let grid="";
+  for(let v=lo; v<=hi+1e-6; v+=step){
+    const y=Y(v).toFixed(1), lab=step<1?v.toFixed(1):Math.round(v);
+    grid+="<line class='grid' x1='"+padL+"' y1='"+y+"' x2='"+(padL+plotW)+"' y2='"+y+"'/>";
+    grid+="<text class='axlab' x='"+(padL-10)+"' y='"+(+y+3).toFixed(1)+"' text-anchor='end'>"+lab+"</text>";
+  }
+
+  let xlab="";
+  labels.forEach((lab,i)=>{const yr=lab.slice(0,4); if(lab.slice(5)==="01"&&(+yr)%2===0)
+    xlab+="<text class='axlab' x='"+X(i).toFixed(1)+"' y='"+(H-16)+"' text-anchor='middle'>"+yr+"</text>";});
+
+  const lines=series.map((s,i)=>{
+    const path=makePath(s.values);
+    const last=s.values.filter(v=>v!=null).slice(-1)[0];
+    const lastX=X(s.values.length-1);
+    const lastY=Y(last!=null?last:100);
+    return "<g>"+
+      "<path class='lineL' d='"+path+"' style='stroke:"+s.color+"'/>"+
+      "<circle class='dotL' cx='"+lastX.toFixed(1)+"' cy='"+lastY.toFixed(1)+"' r='3.4' style='fill:"+s.color+";stroke:var(--ink)'/>"+
+      (last!=null?"<text class='endL' x='"+(lastX+6).toFixed(1)+"' y='"+(lastY+3).toFixed(1)+"' style='fill:"+s.color+"'>"+Math.round(last)+"</text>":"")+
+      "</g>";
+  }).join("");
+
+  const legend=series.map((s,i)=>"<span class='leg'><span class='sw' style='border-color:"+s.color+"'></span><span class='val'>"+s.name+"</span></span>").join("");
+  box.innerHTML="<div class='compare-legend'>"+legend+"</div>"+
+    "<svg id='compareSvg' class='chart' viewBox='0 0 "+W+" "+(H+24)+"' preserveAspectRatio='xMidYMid meet'>"+
+    grid+xlab+"<text class='axtitle' x='"+((padL+plotW)/2)+"' y='"+(H+12)+"' text-anchor='middle'>Year</text>"+
+    "<text class='axtitle' x='18' y='"+(padT+plotH/2)+"' text-anchor='middle' transform='rotate(-90 18 "+(padT+plotH/2)+")'>Growth, indexed to 100</text>"+
+    lines+
+    "<line id='compareGuide' x1='0' y1='"+padT+"' x2='0' y2='"+(padT+plotH)+"' stroke='rgb(160,160,160)' stroke-width='1' stroke-dasharray='4 4' style='opacity:0.5'/>"+
+    "<g id='compareMarkers'></g>"+
+    "<rect id='compareHover' x='"+padL+"' y='"+padT+"' width='"+plotW+"' height='"+plotH+"' fill='transparent' style='cursor:crosshair'/>"+
+    "</svg>";
+
+  const svgEl=document.getElementById("compareSvg");
+  const hit=document.getElementById("compareHover");
+  const guide=document.getElementById("compareGuide");
+  const markers=document.getElementById("compareMarkers");
+  if(svgEl&&hit&&guide){
+    hit.addEventListener("mousemove",e=>{
+      const r=svgEl.getBoundingClientRect();
+      let i=Math.round(((e.clientX-r.left)/r.width*W-padL)/plotW*(labels.length-1));
+      i=Math.max(0,Math.min(labels.length-1,i));
+      const x=X(i);
+      guide.setAttribute("x1",x); guide.setAttribute("x2",x); guide.style.opacity="1";
+      const points=series.map(s=>{
+        const v=s.values[i];
+        if(v==null) return "";
+        const y=Y(v);
+        return "<circle cx='"+x.toFixed(1)+"' cy='"+y.toFixed(1)+"' r='3.2' fill='"+s.color+"' stroke='var(--ink)' stroke-width='1.2'/>";
+      }).filter(Boolean).join("");
+      if(markers) markers.innerHTML=points;
+      const label=labels[i]||"";
+      const rows=series.map(s=>{
+        const v=s.values[i];
+        const val=v==null?"—":v.toFixed(1);
+        return "<div class='r'><span style='color:"+s.color+"'>"+s.name+"</span><span>"+val+"</span></div>";
+      });
+      tip.innerHTML="<h4>"+(label?label:"Hover")+"</h4>"+rows.join("");
+      tip.style.opacity="1";
+      let xPos=e.clientX+16, yPos=e.clientY+16;
+      if(xPos+300>window.innerWidth) xPos=e.clientX-300;
+      if(yPos+140>window.innerHeight) yPos=e.clientY-140;
+      tip.style.left=xPos+"px"; tip.style.top=yPos+"px";
+    });
+    hit.addEventListener("mouseleave",()=>{
+      guide.style.opacity="0";
+      if(markers) markers.innerHTML="";
+      tip.style.opacity="0";
+    });
+  }
+}
+
+function renderChips(){
+  const box=document.getElementById("chips"); box.innerHTML="";
+  const all=el("button","chip"+(activeSectors.size===0?" on":""),"All trades");
+  all.onclick=()=>{activeSectors.clear(); renderChips(); renderRows();};
+  box.appendChild(all);
+  SECTORS.forEach(s=>{
+    const c=el("button","chip"+(activeSectors.has(s)?" on":""),s);
+    c.onclick=()=>{activeSectors.has(s)?activeSectors.delete(s):activeSectors.add(s); renderChips(); renderRows();};
+    box.appendChild(c);
+  });
+}
+
+// ---- axes ----
+function renderAxis(){
+  const ax=document.getElementById("axis"); ax.innerHTML="";
+  [1800,1850,1900,1950,2000].forEach(yr=>{
+    const t=el("div","tick"+(yr===NOW?" now":"")); t.style.left=pct(yr,C_START,C_END)+"%";
+    t.appendChild(el("span",null,String(yr))); ax.appendChild(t);
+  });
+}
+// ---- company rows ----
+function renderRows(){
+  const sort=document.getElementById("sort").value;
+  let list=COMPANIES.filter(c=> activeSectors.size===0 || activeSectors.has(c.s));
+  if(sort==="old") list.sort((a,b)=>a.y-b.y);
+  else if(sort==="young") list.sort((a,b)=>b.y-a.y);
+  else list.sort((a,b)=>a.n.localeCompare(b.n));
+
+  const box=document.getElementById("rows"); box.innerHTML="";
+  list.forEach(c=>{
+    const age=NOW-c.y;
+    const row=el("div","row");
+    const meta=el("div","meta");
+    const top=el("div","top");
+    top.appendChild(el("div","nm",c.n));
+    top.appendChild(el("div","tk mono",c.t));
+    meta.appendChild(top);
+    meta.appendChild(el("div","sub",c.s+" &middot; est. "+c.y));
+    row.appendChild(meta);
+
+    const p=PRICES&&PRICES.constituents[c.t];
+    const pcell=el("div","pcell");
+    if(p){
+      pcell.appendChild(el("div","px","$"+p.price.toFixed(2)));
+      const dir=p.chg>=0?"up":"down";
+      pcell.appendChild(el("div","pchg "+dir,(p.chg>=0?"▲ ":"▼ ")+Math.abs(p.chg).toFixed(2)+"%"));
+    }
+    row.appendChild(pcell);
+
+    const track=el("div","track");
+    const lLeft=pct(c.y,C_START,C_END);
+    const lived=el("div","bar lived"); lived.style.left=lLeft+"%"; lived.style.width=(100-lLeft)+"%";
+    track.append(lived);
+    row.appendChild(track);
+
+    const agecell=el("div","agecell"); agecell.appendChild(el("div","agechip mono",age+"y"));
+    row.appendChild(agecell);
+
+    const tipRows=[["Founded",c.y],["Age",age+" years"],["Trade",c.s]];
+    if(p) tipRows.push(["Last price","$"+p.price.toFixed(2)],["1-yr return",(p.ret["1y"]>=0?"+":"")+(p.ret["1y"]*100).toFixed(1)+"%"]);
+    const tipData={title:c.n+" ("+c.t+")", rows:tipRows, note:"Click for price history & the full story."};
+    [meta,pcell,track,agecell].forEach(z=>bindTip(z,tipData));
+    box.appendChild(row);
+
+    const detail=el("div","detail");
+    row.onclick=()=>{
+      const wasOpen=detail.classList.contains("open");
+      document.querySelectorAll("#rows .detail.open").forEach(d=>d.classList.remove("open"));
+      document.querySelectorAll("#rows .row.open").forEach(r=>r.classList.remove("open"));
+      if(!wasOpen){
+        if(!detail.dataset.built){ renderDetail(c,detail); detail.dataset.built="1"; }
+        detail.classList.add("open"); row.classList.add("open");
+      }
+    };
+    box.appendChild(detail);
+  });
+}
+
+// ---- company detail panel ----
+function priceChartSVG(tk){
+  const Hd=PRICES&&PRICES.hist; if(!Hd||!Hd.by[tk]) return "<div class='nochart'>No price history available.</div>";
+  const v=Hd.by[tk], t=Hd.months, n=v.length;
+  const W=540,H=210,padL=48,padR=16,padT=12,padB=26;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const vmin=Math.min(...v), vmax=Math.max(...v);
+  const raw=((vmax-vmin)||1)/4, mag=Math.pow(10,Math.floor(Math.log10(raw)));
+  const step=[1,2,2.5,5,10].map(m=>m*mag).find(s=>s>=raw)||10*mag;
+  const lo=Math.max(0,Math.floor(vmin/step)*step), hi=Math.ceil(vmax/step)*step;
+  const X=i=> padL + (n<=1?0:(i/(n-1))*plotW);
+  const Y=val=> padT + plotH - ((val-lo)/(hi-lo))*plotH;
+  let grid="";
+  for(let val=lo; val<=hi+1e-6; val+=step){
+    const y=Y(val).toFixed(1), lab=step<1?val.toFixed(1):Math.round(val);
+    grid+="<line class='grid' x1='"+padL+"' y1='"+y+"' x2='"+(padL+plotW)+"' y2='"+y+"'/>";
+    grid+="<text class='axlab' x='"+(padL-8)+"' y='"+(+y+3).toFixed(1)+"' text-anchor='end'>$"+lab+"</text>";
+  }
+  let xlab="";
+  t.forEach((lab,i)=>{const yr=lab.slice(0,4); if(lab.slice(5)==="01"&&(+yr)%2===0)
+    xlab+="<text class='axlab' x='"+X(i).toFixed(1)+"' y='"+(H-7)+"' text-anchor='middle'>"+yr+"</text>";});
+  const line=v.map((val,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(val).toFixed(1)).join(" ");
+  const area=line+" L"+X(n-1).toFixed(1)+" "+(padT+plotH).toFixed(1)+" L"+X(0).toFixed(1)+" "+(padT+plotH).toFixed(1)+" Z";
+  const last=v[n-1];
+  return "<svg class='chart pchart' viewBox='0 0 "+W+" "+H+"' preserveAspectRatio='xMidYMid meet'>"+
+    grid+xlab+
+    "<path class='pricearea' d='"+area+"'/><path class='priceline' d='"+line+"'/>"+
+    "<circle class='dotL' cx='"+X(n-1).toFixed(1)+"' cy='"+Y(last).toFixed(1)+"' r='3'/>"+
+    "<text class='endL' x='"+(X(n-1)-5).toFixed(1)+"' y='"+(Y(last)-7).toFixed(1)+"' text-anchor='end'>$"+last.toFixed(2)+"</text>"+
+    "</svg>";
+}
+function renderDetail(c,panel){
+  const p=(PRICES&&PRICES.constituents[c.t])||{}, r=p.ret||{}, age=NOW-c.y;
+  const ret=x=> x==null?"—":"<span class='"+(x>=0?"up":"down")+"'>"+(x>=0?"+":"")+(x*100).toFixed(1)+"%</span>";
+  const facts=[["Founded",c.y],["Age",age+" yrs"],["Trade",c.s]];
+  const rets=[
+    ["Last",p.price!=null?"$"+p.price.toFixed(2):"—"],
+    ["1-yr",ret(r["1y"])],["5-yr",ret(r["5y"])],["10-yr",ret(r["10y"])],
+  ];
+  panel.innerHTML=
+    "<div class='detail-inner'><div class='detail-grid'>"+
+      "<div class='detail-left'>"+
+        "<p class='detail-bio'>"+(c.bio||c.note||"")+"</p>"+
+        "<div class='detail-facts'>"+facts.map(f=>"<div class='fct'><span>"+f[0]+"</span><b>"+f[1]+"</b></div>").join("")+"</div>"+
+        "<div class='detail-rets'>"+rets.map(f=>"<div class='fct'><span>"+f[0]+"</span><b>"+f[1]+"</b></div>").join("")+"</div>"+
+        "<div class='proj'>"+
+          "<div class='proj-cap'>Lindy projection</div>"+
+          "<div class='proj-bar'><div class='pb-lived'></div><div class='pb-shadow'></div><div class='pb-now'></div></div>"+
+          "<div class='proj-lab'><span>"+c.y+"</span><span class='nowlab'>now "+NOW+"</span><span>~"+(NOW+age)+"</span></div>"+
+          "<p class='proj-note'>"+age+" years already endured &mdash; by the Lindy heuristic, a claim to roughly "+age+" more, to about "+(NOW+age)+".</p>"+
+        "</div>"+
+      "</div>"+
+      "<div class='detail-right'>"+
+        "<div class='pchart-title'>Share price &middot; monthly &middot; last 10 years</div>"+
+        priceChartSVG(c.t)+
+      "</div>"+
+    "</div></div>";
+}
+
+// ---- tooltip ----
+const tip=document.getElementById("tip");
+function bindTip(node,data){
+  node.addEventListener("mousemove",e=>{
+    tip.innerHTML="<h4>"+data.title+"</h4>"+
+      data.rows.map(r=>"<div class='r'><span>"+r[0]+"</span><span>"+r[1]+"</span></div>").join("")+
+      (data.note?"<div class='note'>"+data.note+"</div>":"");
+    tip.style.opacity="1";
+    let x=e.clientX+16, y=e.clientY+16;
+    if(x+290>window.innerWidth) x=e.clientX-290;
+    if(y+150>window.innerHeight) y=e.clientY-150;
+    tip.style.left=x+"px"; tip.style.top=y+"px";
+  });
+  node.addEventListener("mouseleave",()=>tip.style.opacity="0");
+}
+
+function setPerfView(view){
+  document.getElementById("perfViewTable").classList.toggle("hidden", view!=="table");
+  document.getElementById("perfViewCompare").classList.toggle("hidden", view!=="compare");
+  const title=document.querySelector(".perf-title");
+  const toggle=document.getElementById("perfViewToggle");
+  if(title){
+    title.innerHTML=view==="table"?"The Lindy Index <em>vs.</em> the S&amp;P 500":"Compare up to <em>three</em> companies";
+  }
+  if(toggle){
+    toggle.setAttribute("data-view", view==="table"?"compare":"table");
+    toggle.textContent=view==="table"?"Compare companies":"vs. the S&P 500";
+    toggle.classList.toggle("on", view==="compare");
+    toggle.setAttribute("aria-pressed", view==="compare"?"true":"false");
+  }
+  if(view==="compare") renderComparisonChart();
+}
+
+// ---- compare controls ----
+document.querySelectorAll(".compare-select").forEach(sel=>{
+  sel.addEventListener("change",()=>{
+    const seen=new Set();
+    document.querySelectorAll(".compare-select").forEach(other=>{
+      const v=other.value;
+      if(v && seen.has(v)) other.value="";
+      else if(v) seen.add(v);
+    });
+    renderComparisonChart();
+  });
+});
+document.getElementById("compareReset").addEventListener("click",()=>{
+  document.querySelectorAll(".compare-select").forEach((sel,idx)=>{ sel.value=DEFAULT_COMPARE_TICKERS[idx]||""; });
+  renderComparisonChart();
+});
+document.getElementById("perfViewToggle").addEventListener("click",()=>{
+  const next=document.getElementById("perfViewToggle").getAttribute("data-view")||"compare";
+  setPerfView(next);
+});
+
+document.getElementById("sort").onchange=renderRows;
+
+// ---- init ----
+// PRICES-independent scaffolding renders immediately; price data loads from prices.json.
+renderStats(); renderChips(); renderAxis();
+populateComparisonSelectors(); setPerfView("table");
+fetch("prices.json")
+  .then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+  .then(data=>{ PRICES=data; renderPerf(); renderRows(); renderComparisonChart(); })
+  .catch(err=>{
+    document.getElementById("perfTable").innerHTML=
+      "<div class='nochart'>Couldn't load prices.json ("+err.message+"). "+
+      "Serve the folder over http (e.g. <b>python -m http.server</b>) rather than opening the file directly.</div>";
+    renderRows();   // the register still renders, just without price data
+  });
+</script>
+</body>
+</html>
