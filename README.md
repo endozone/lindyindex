@@ -1,0 +1,2 @@
+# lindyindex
+The Lindy Index 
