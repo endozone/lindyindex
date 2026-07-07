@@ -2,830 +2,799 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>mia chin — essays & research</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lindy Index</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #fafbfc;
-    --grid: rgba(80, 130, 200, 0.18);
-    --ink: #15171a;
-    --ink-muted: #6b7280;
-    --rule: rgba(20, 30, 50, 0.12);
-    --accent: #0a3b2e;
-    --sans: 'Instrument Sans', system-ui, sans-serif;
-    --serif: 'Newsreader', Georgia, serif;
+  :root{
+    --ink:#10151a;
+    --ink-2:#161d24;
+    --ink-3:#1d262e;
+    --line:#2b3742;
+    --bone:#e9e4d6;
+    --bone-dim:#b7b2a4;
+    --slate:#7f8c94;
+    --patina:#74b59c;
+    --patina-soft:rgba(116,181,156,0.16);
+    --patina-line:rgba(116,181,156,0.42);
+    --brass:#cda557;
+    --rust:#c5765a;
   }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--ink);color:var(--bone);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  body{padding:0 0 64px;}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+  a{color:inherit;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* ---- masthead ---- */
+  header{padding:48px 28px 0;max-width:1180px;margin:0 auto;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--patina);margin:0 0 14px;}
+  h1{font-family:"Fraunces",serif;font-optical-sizing:auto;font-weight:600;
+    font-size:clamp(38px,7vw,76px);line-height:.96;letter-spacing:-.015em;margin:0;color:var(--bone);}
+  h1 em{font-style:italic;color:var(--brass);}
+  .lede{margin:22px 0 0;font-size:16px;line-height:1.6;color:var(--bone-dim);}
+  .lede b{color:var(--bone);font-weight:500;}
 
-  html, body { height: 100%; }
+  /* ---- stat strip ---- */
+  .stats{display:flex;flex-wrap:wrap;gap:0;margin:34px 0 0;border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);}
+  .stat{flex:1 1 150px;padding:18px 22px;border-right:1px solid var(--line);text-align:center;}
+  .stat:last-child{border-right:none;}
+  .stat .n{font-family:"Fraunces",serif;font-weight:600;font-size:34px;line-height:1;color:var(--patina);}
+  .stat .l{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);margin-top:8px;}
 
-  body {
-    font-family: var(--sans);
-    color: var(--ink);
-    background-color: var(--bg);
-    background-image:
-      linear-gradient(to right, var(--grid) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-    background-size: 28px 28px;
-    background-position: -1px -1px;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+  /* ---- tabs + controls ---- */
+  .toolbar{max-width:1180px;margin:34px auto 0;padding:0 28px;display:flex;flex-wrap:wrap;
+    align-items:flex-end;justify-content:space-between;gap:18px;}
+  .tabs{display:flex;gap:4px;}
+  .tab{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--slate);background:none;border:none;cursor:pointer;
+    padding:10px 16px;border-bottom:2px solid transparent;transition:color .18s,border-color .18s;}
+  .tab:hover{color:var(--bone-dim);}
+  .tab.on{color:var(--bone);border-bottom-color:var(--brass);}
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .ctl-label{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--slate);}
+  select{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--bone);
+    background:var(--ink-2);border:1px solid var(--line);border-radius:2px;padding:7px 10px;cursor:pointer;}
+  select:focus{outline:2px solid var(--patina-line);outline-offset:1px;}
 
-  .layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    min-height: 100vh;
-  }
+  /* ---- performance panel ---- */
+  .perf{max-width:1180px;margin:30px auto 0;padding:0 28px;}
+  .perf-top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+  .perf-title{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(24px,3.4vw,34px);
+    line-height:1;letter-spacing:-.01em;margin:6px 0 0;color:var(--bone);}
+  .perf-title em{font-style:italic;color:var(--brass);}
+  .perf-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .perf-controls{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    margin:10px 0 0;}
+  .perf-asof{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);
+    margin:0 0 0 4px;display:block;}
+  .view-toggle-btn{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--bone);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:7px 12px;cursor:pointer;transition:all .15s;}
+  .view-toggle-btn:hover{color:var(--bone-dim);border-color:var(--patina-line);}
+  .view-toggle-btn.on{color:var(--ink);background:var(--brass);border-color:var(--brass);font-weight:600;}
+  .perf-table{margin-top:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .perf-row{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;align-items:center;}
+  .perf-row + .perf-row{border-top:1px solid rgba(43,55,66,.55);}
+  .perf-cell{padding:14px 16px;font-family:"IBM Plex Mono",monospace;}
+  .perf-cell.num{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+  .perf-row.head .perf-cell{font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--slate);padding-top:12px;padding-bottom:12px;}
+  .perf-cell .lbl{font-size:13px;color:var(--bone-dim);letter-spacing:.04em;}
+  .perf-cell .lbl{display:block;}
+  .perf-row .lbl{font-size:13px;color:var(--bone);letter-spacing:.03em;}
+  .perf-cell .big{font-family:"Fraunces",serif;font-weight:600;font-size:23px;line-height:1;}
+  .perf-cell .mid{font-size:16px;color:var(--bone-dim);}
+  .perf-cell .ann{font-size:10px;letter-spacing:.08em;color:var(--slate);}
+  .perf-cell .spread{font-size:14px;font-weight:600;}
+  .up{color:var(--patina);} .down{color:var(--rust);}
+  .perf-note{max-width:760px;margin:14px 0 0;font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;line-height:1.7;letter-spacing:.03em;color:var(--slate);}
 
-  /* Sidebar */
-  .sidebar {
-    padding: 56px 36px 56px 44px;
-    border-right: 1px solid var(--rule);
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-  }
+  /* ---- growth chart ---- */
+  .chart-wrap{margin-top:20px;border-top:1px solid var(--line);padding-top:16px;}
+  .chart-head{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    flex-wrap:wrap;margin-bottom:12px;}
+  .chart-legend{display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.03em;}
+  .leg{display:flex;align-items:center;gap:8px;color:var(--bone-dim);}
+  .leg .sw{display:inline-block;width:18px;border-top:3px solid;}
+  .leg .sw.dash{border-top-style:dashed;}
+  .leg .val{color:var(--bone);font-variant-numeric:tabular-nums;font-weight:600;}
+  .chart-periods{display:flex;gap:4px;}
+  .cper{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;
+    color:var(--slate);background:var(--ink-2);border:1px solid var(--line);border-radius:2px;
+    padding:5px 11px;cursor:pointer;transition:all .15s;}
+  .cper:hover{color:var(--bone-dim);border-color:var(--patina-line);}
+  .cper.on{color:var(--ink);background:var(--brass);border-color:var(--brass);font-weight:600;}
+  .chart-foot{margin-top:8px;}
+  .chart-read{color:var(--slate);font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+    letter-spacing:.06em;font-variant-numeric:tabular-nums;}
+  .compare-section{margin-top:30px;}
+  .compare-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 12px;padding-top:4px;}
+  .compare-select,.compare-reset{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--bone);
+    background:var(--ink-2);border:1px solid var(--line);border-radius:2px;padding:7px 10px;}
+  .compare-select:focus{outline:2px solid var(--patina-line);outline-offset:1px;}
+  .compare-reset{cursor:pointer;color:var(--bone-dim);}
+  .compare-reset:hover{border-color:var(--patina-line);color:var(--bone);}
+  .compare-chart{margin-top:14px;border-top:1px solid var(--line);padding-top:16px;}
+  .compare-legend{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.03em;margin-bottom:10px;}
+  .compare-note{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--slate);padding:8px 0 4px;}
+  svg.chart{display:block;width:100%;height:auto;overflow:visible;}
+  .chart .grid{stroke:rgba(43,55,66,.55);stroke-width:1;}
+  .chart .axlab{fill:var(--slate);font-family:"IBM Plex Mono",monospace;font-size:10px;}
+  .chart .axtitle{fill:var(--slate);font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+    letter-spacing:.18em;text-transform:uppercase;}
+  .chart .lineL{fill:none;stroke:var(--patina);stroke-width:2.5;
+    stroke-linejoin:round;stroke-linecap:round;}
+  .chart .lineS{fill:none;stroke:var(--bone-dim);stroke-width:1.8;stroke-dasharray:5 4;
+    stroke-linejoin:round;stroke-linecap:round;}
+  .chart .endL{fill:var(--patina);font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;}
+  .chart .endS{fill:var(--bone-dim);font-family:"IBM Plex Mono",monospace;font-size:11px;}
+  .chart .guide{stroke:var(--brass);stroke-width:1;stroke-dasharray:3 3;}
+  .chart .dotL{fill:var(--patina);stroke:var(--ink);stroke-width:1.5;}
+  .chart .dotS{fill:var(--bone-dim);stroke:var(--ink);stroke-width:1.5;}
+  .perf-tbl-head{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);margin:40px 0 0;}
 
-  .name {
-    font-family: var(--sans);
-    font-weight: 400;
-    font-size: 32px;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    margin-bottom: 12px;
-    cursor: pointer;
-  }
+  /* ---- price cell ---- */
+  .pcell{padding:9px 14px 9px 0;display:flex;flex-direction:column;gap:2px;
+    align-items:flex-end;justify-content:center;text-align:right;min-width:0;}
+  .px{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--bone);font-variant-numeric:tabular-nums;}
+  .pchg{font-family:"IBM Plex Mono",monospace;font-size:11px;font-variant-numeric:tabular-nums;}
 
-  .nav-group { margin-bottom: 12px; }
+  /* ---- sector chips ---- */
+  .chips{max-width:1180px;margin:16px auto 0;padding:0 28px;display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.04em;
+    color:var(--bone-dim);background:var(--ink-2);border:1px solid var(--line);
+    border-radius:999px;padding:5px 13px;cursor:pointer;transition:all .15s;}
+  .chip:hover{border-color:var(--patina-line);color:var(--bone);}
+  .chip.on{background:var(--patina-soft);border-color:var(--patina-line);color:var(--patina);}
 
-  .nav-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 8px 0;
-    font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    color: var(--ink);
-    text-transform: uppercase;
-    cursor: pointer;
-    text-align: left;
-    transition: opacity 150ms ease;
-  }
+  /* ---- timeline axis ---- */
+  .scene{max-width:1180px;margin:26px auto 0;padding:0 28px;}
+  .axis{position:relative;height:26px;margin-left:calc(var(--lane) + var(--pcol));
+    margin-right:var(--agecol);border-bottom:1px solid var(--line);}
+  .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--line);}
+  .tick span{position:absolute;top:1px;left:8px; /* Changed from 50% to 6px */
+    font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;
+    color:var(--slate);white-space:nowrap;}
+  .tick.now span{left:auto;right:0;transform:none;}   /* rightmost label hugs the edge */
 
-  .nav-heading:hover { opacity: 0.55; }
+  /* ---- rows ---- */
+  :root{--lane:252px;--pcol:104px;--agecol:72px;}
+  .row{display:grid;grid-template-columns:var(--lane) var(--pcol) 1fr var(--agecol);align-items:center;
+    border-bottom:1px solid rgba(43,55,66,.55);min-height:52px;}
+  .row:hover{background:rgba(116,181,156,.045);}
+  .meta{padding:9px 18px 9px 0;display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .meta .top{display:flex;align-items:baseline;gap:9px;min-width:0;}
+  .nm{font-family:"Fraunces",serif;font-weight:500;font-size:16.5px;color:var(--bone);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tk{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--patina);
+    border:1px solid var(--patina-line);border-radius:2px;padding:1px 5px;flex:none;}
+  .sub{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.05em;
+    color:var(--slate);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-  .nav-heading .chev {
-    font-size: 12px;
-    transition: transform 220ms ease;
-    opacity: 0.45;
-    display: inline-block;
-  }
+  .track{position:relative;height:100%;min-height:52px;}
+  .bar{position:absolute;top:50%;transform:translateY(-50%);height:13px;border-radius:2px;}
+  .bar.lived{background:linear-gradient(90deg,var(--patina) 0%,#5e9c84 100%);
+    box-shadow:0 0 0 1px rgba(116,181,156,.25);}
+  .bar.shadow{background:repeating-linear-gradient(90deg,var(--patina-soft) 0 6px,transparent 6px 12px);
+    border:1px solid var(--patina-line);border-left:none;}
+  .nowmark{position:absolute;top:0;bottom:0;width:1px;background:rgba(205,165,87,.35);}
+  .agecell{display:flex;align-items:center;padding:0 6px 0 11px;
+    border-left:1px solid rgba(205,165,87,.28);}
+  .agechip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;
+    color:var(--ink);font-weight:600;background:var(--brass);border-radius:2px;padding:1px 7px;
+    white-space:nowrap;pointer-events:none;}
+  .row{cursor:pointer;}
+  .row.open{border-bottom-color: transparent;}
 
-  .nav-group.open .chev { transform: rotate(90deg); }
+  /* ---- expandable detail ---- */
+  .detail{display:none;border-bottom:1px solid rgba(43,55,66,.55);}
+  .detail.open{display:block;}
+  .detail-inner{padding:22px 8px 28px 0;}
+  .detail-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:34px;align-items:start;}
+  .detail-bio{margin:0;font-size:14px;line-height:1.7;color:var(--bone-dim);max-width:48ch;}
+  .detail-facts{display:flex;flex-wrap:wrap;gap:12px 30px;margin-top:18px;}
+  .detail-rets{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 18px;
+    margin-top:16px;max-width:380px;}
+  .fct{display:flex;flex-direction:column;gap:3px;}
+  .fct span{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--slate);}
+  .fct b{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--bone);font-weight:500;
+    font-variant-numeric:tabular-nums;}
+  .proj{margin-top:22px;max-width:340px;}
+  .proj-cap{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);}
+  .proj-bar{position:relative;display:flex;height:14px;margin-top:8px;}
+  .pb-lived{width:50%;background:linear-gradient(90deg,var(--patina),#5e9c84);
+    border-radius:2px 0 0 2px;box-shadow:0 0 0 1px rgba(116,181,156,.25);}
+  .pb-shadow{width:50%;background:repeating-linear-gradient(90deg,var(--patina-soft) 0 6px,transparent 6px 12px);
+    border:1px solid var(--patina-line);border-left:none;border-radius:0 2px 2px 0;}
+  .pb-now{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--brass);}
+  .proj-lab{display:flex;justify-content:space-between;margin-top:6px;
+    font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--slate);}
+  .proj-lab .nowlab{color:var(--brass);}
+  .proj-note{margin:10px 0 0;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+    line-height:1.6;color:var(--slate);}
+  .pchart-title{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);margin-bottom:10px;}
+  .pchart .priceline{fill:none;stroke:var(--patina);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+  .pchart .pricearea{fill:var(--patina-soft);stroke:none;}
+  .pchart .dotL{fill:var(--patina);stroke:var(--ink);stroke-width:1.5;}
+  .nochart{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--slate);padding:20px 0;}
 
-  .nav-list {
-    list-style: none;
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 260ms ease;
-  }
+  /* tooltip */
+  .tip{position:fixed;z-index:50;pointer-events:none;opacity:0;transition:opacity .12s;
+    background:var(--ink-3);border:1px solid var(--patina-line);border-radius:4px;
+    padding:11px 13px;max-width:280px;font-size:12.5px;line-height:1.5;color:var(--bone-dim);
+    box-shadow:0 14px 40px rgba(0,0,0,.5);}
+  .tip h4{font-family:"Fraunces",serif;font-weight:600;font-size:15px;color:var(--bone);margin:0 0 5px;}
+  .tip .r{display:flex;justify-content:space-between;gap:18px;margin-top:3px;}
+  .tip .r span:first-child{color:var(--slate);font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;}
+  .tip .r span:last-child{font-family:"IBM Plex Mono",monospace;color:var(--bone);}
+  .tip .note{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);color:var(--bone-dim);}
 
-  .nav-group.open .nav-list { max-height: 600px; }
+  /* industries tab */
+  .ind-head{display:grid;grid-template-columns:var(--lane) var(--pcol) 1fr var(--agecol);
+    padding:0; position:relative; top:16px; /* Removed bottom padding and pushed down */
+    font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--slate);}
+  .ind-head div:last-child{padding-left:2px;}
+  .ind-head .rt{text-align:right;padding-right:14px;}
+  .ind-head div.agehead{color:var(--brass); padding-left: 20px;}
+  /* industries: label + full-width track, no price/age columns */
+  .ind-head.ind-head2{grid-template-columns:var(--lane) 1fr;}
+  .row.irow{grid-template-columns:var(--lane) 1fr;cursor:default;}
+  .axis.iaxis{margin-left:var(--lane);margin-right:0;}
 
-  .nav-list li {
-    padding: 7px 0 7px 14px;
-    font-family: var(--serif);
-    font-size: 14px;
-    font-style: italic;
-    color: var(--ink-muted);
-    cursor: pointer;
-    line-height: 1.3;
-    transition: color 150ms ease;
-  }
-
-  .nav-list li:hover,
-  .nav-list li.active {
-    color: var(--accent);
-  }
-
-  .nav-link {
-    display: block;
-    padding: 6px 0;
-    font-family: var(--sans);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    color: var(--ink-muted);
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: color 150ms ease;
-  }
-
-  .nav-link:hover { color: var(--ink); }
-
-  .project-list {
-    margin-top: 28px;
-    display: grid;
-    gap: 16px;
-  }
-
-  .project-card {
-    padding: 14px 0 16px 0;
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .project-card:last-child {
-    border-bottom: none;
-  }
-
-  .project-card h3 {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: 20px;
-    margin-bottom: 6px;
-  }
-
-  .project-card p {
-    font-family: var(--serif);
-    font-size: 15px;
-    line-height: 1.6;
-    color: var(--ink-muted);
-    margin-bottom: 0;
-  }
-
-  .divider {
-    height: 0px;
-    background: var(--rule);
-    margin: 32px 0 38px 0;
-  }
-
-  /* Main */
-  .main { padding: 88px 72px; }
-
-  .content { max-width: 768px; }
-
-  .eyebrow {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-    margin-bottom: 20px;
-  }
-
-  .content h1 {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: 44px;
-    letter-spacing: -0.01em;
-    line-height: 1.1;
-    margin-bottom: 24px;
-  }
-
-  .content .meta {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    color: var(--ink-muted);
-    margin-bottom: 36px;
-    text-transform: uppercase;
-  }
-
-  .content p {
-    font-family: var(--serif);
-    font-size: 17px;
-    line-height: 1.65;
-    margin-bottom: 20px;
-  }
-
-  /* Footnotes */
-  .footnote-ref {
-    font-size: 0.65em;
-    vertical-align: super;
-    line-height: 0;
-    cursor: pointer;
-    color: var(--accent);
-    text-decoration: none;
-    transition: opacity 150ms ease;
-  }
-
-  .footnote-ref:hover {
-    opacity: 0.7;
-    text-decoration: underline;
-  }
-
-  .footnotes {
-    margin-top: 48px;
-    padding-top: 24px;
-    border-top: 1px solid var(--rule);
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  .footnotes ol {
-    list-style-position: inside;
-    margin-left: 0;
-    padding-left: 0;
-  }
-
-  .footnotes li {
-    margin-bottom: 12px;
-    color: var(--ink-muted);
-  }
-
-  .footnotes li p {
-    display: inline;
-    font-size: 14px;
-    margin-bottom: 0;
-  }
-
-  .footnote-backref {
-    margin-left: 6px;
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 0.9em;
-    transition: opacity 150ms ease;
-  }
-
-  .footnote-backref:hover {
-    opacity: 0.7;
-    text-decoration: underline;
-  }
-
-  /* Figures / chart captions */
-  .content figure {
-    margin: 40px 0;
-  }
-
-  .content figure img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    background: #fff;
-  }
-
-  .content figcaption {
-    font-family: var(--sans);
-    font-size: 13px;
-    line-height: 1.55;
-    color: var(--ink-muted);
-    margin-top: 12px;
-    border-left: 0px solid var(--rule);
-    padding-left: 12px;
-  }
-
-  .content figure.chart-small img {
-    max-width: 80%;
-  }
-
-  .featured {
-    margin-top: 56px;
-    padding-top: 32px;
-    border-top: 1px solid var(--rule);
-  }
-
-  .featured-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-    margin-bottom: 20px;
-  }
-
-  .featured-item {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    padding: 14px 0;
-    cursor: pointer;
-    border-bottom: 1px solid var(--rule);
-    transition: padding-left 200ms ease;
-  }
-
-  .featured-item:hover { padding-left: 10px; }
-
-  .featured-item h3 {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: 19px;
-    margin-bottom: 4px;
-  }
-
-  .featured-item .tag {
-    font-family: var(--sans);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    color: var(--ink-muted);
-    text-transform: uppercase;
-  }
-
-  @media (max-width: 800px) {
-    .layout { grid-template-columns: 1fr; }
-    .sidebar {
-      position: static;
-      height: auto;
-      border-right: none;
-      border-bottom: 1px solid var(--rule);
-      padding: 32px 28px;
-    }
-    .name { margin-bottom: 28px; font-size: 28px; }
-    .main { padding: 48px 28px; }
-    .content h1 { font-size: 32px; }
+  footer{max-width:1180px;margin:46px auto 0;padding:24px 28px 0;border-top:1px solid var(--line);
+    font-size:12.5px;line-height:1.65;color:var(--slate);}
+  footer b{color:var(--bone-dim);font-weight:500;}
+  .hidden{display:none;}
+  @media(max-width:720px){
+    :root{--lane:150px;--pcol:76px;--agecol:58px;}
+    .nm{font-size:14px;} .stat{flex-basis:120px;}
+    .px{font-size:12px;} .pchg{font-size:10px;}
+    .perf-cell{padding:11px 9px;} .perf-cell .big{font-size:18px;}
+    .detail-grid{grid-template-columns:1fr;gap:22px;}
+    .detail-inner{padding:18px 4px 22px 0;}
+    .bar-wrap-note{display:none;}
   }
 </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar">
-      <h1 class="name" onclick="loadHome()">MIA CHIN</h1>
 
-      <div class="nav-group" id="group-essays">
-        <button class="nav-heading" onclick="toggleGroup('essays')">
-          <span>Essays</span>
-          <span class="chev">&rsaquo;</span>
-        </button>
-        <ul class="nav-list">
-          <li onclick="loadPiece('essay-1', this)">Business cycles and rational expectations</li>
-          <li onclick="loadPiece('essay-2', this)">The financial instability hypothesis</li>
-          <li onclick="loadPiece('essay-3', this)">The rise of prediction markets</li>
-        </ul>
-      </div>
+<header>
+  <h1>The Lindy <em>Index</em></h1>
+  <p class="lede">For things that do not perish, the past predicts the future. A company that has already traded through <b>two centuries</b> of wars and panics has, by the Lindy heuristic, a fair claim to roughly <b>two more</b>. Click on any name to reveal its full price history and biography.</p>
+  <div class="stats" id="stats"></div>
+</header>
 
-      <div class="nav-group" id="group-research">
-        <button class="nav-heading" onclick="toggleGroup('research')">
-          <span>Research</span>
-          <span class="chev">&rsaquo;</span>
-        </button>
-        <ul class="nav-list">
-          <li onclick="loadPiece('research-1', this)">Ryanair</li>
-
-        </ul>
-      </div>
-
-      <div class="nav-group" id="group-projects">
-        <button class="nav-heading" onclick="toggleGroup('projects')">
-          <span>Projects</span>
-          <span class="chev">&rsaquo;</span>
-        </button>
-        <ul class="nav-list">
-          <li onclick="loadPiece('projects', this)">One-off projects and builds</li>
-        </ul>
-      </div>
-
-      <div class="divider"></div>
-
-    <a href="cv.pdf" download="mia_chin_cv" class="nav-link">CV</a>
-    <a href="mailto:mchin3@yorku.ca" class="nav-link">Email</a>
-    </aside>
-
-    <main class="main">
-      <div class="content" id="content"></div>
-    </main>
+<section class="perf">
+  <div class="perf-heading">
+    <h2 class="perf-title">The Lindy Index <em>vs.</em> the S&amp;P 500</h2>
+    <button id="perfViewToggle" class="view-toggle-btn" type="button" data-view="compare">Compare companies</button>
   </div>
+  <div class="perf-controls">
+    <div class="perf-asof mono" id="perfAsof"></div>
+  </div>
+  <div id="perfViewTable">
+    <div class="perf-tbl-head">Trailing returns to today</div>
+    <div class="perf-table" id="perfTable"></div>
+    <p class="perf-note">An equal-weight basket of all <span id="perfN"></span> names below, each period measured from its own start. Price return only &mdash; dividends, which these mature names pay heavily, are excluded, so true total returns run higher. The charts and pricing data do not represent a live feed. Nothing here is investment advice.</p>
+  </div>
+  <div id="perfViewCompare" class="hidden">
+    <div class="compare-controls">
+      <label class="ctl-label" for="compareA">Company 1</label>
+      <select id="compareA" class="compare-select"></select>
+      <label class="ctl-label" for="compareB">Company 2</label>
+      <select id="compareB" class="compare-select"></select>
+      <label class="ctl-label" for="compareC">Company 3</label>
+      <select id="compareC" class="compare-select"></select>
+      <button id="compareReset" class="compare-reset" type="button">Reset</button>
+    </div>
+    <div class="compare-chart" id="compareChart"></div>
+  </div>
+</section>
 
-  <script>
-    const home = `
-      <div class="eyebrow">Portfolio</div>
-      <h1>Writing on markets, theory, and the economy.</h1>
-      <p>I write about equities, macroeconomics, and how markets process information. Some pieces are formal valuation works; others are essays trying to think through theory and data.</p>
-      <p>Pick a section from the sidebar, or start with one of the pieces below.</p>
-
-      <div class="featured">
-        <div class="featured-label">Selected works</div>
-        <div class="featured-item" onclick="loadPiece('essay-1')">
-          <h3>Business cycles and rational expectations</h3>
-          <span class="tag">Essay &middot; 14 min read</span>
-        </div>
-        <div class="featured-item" onclick="loadPiece('research-1')">
-          <h3>Economy Class: How Ryanair’s Business Model Conquered Europe’s Airline Industry</h3>
-          <span class="tag">Equity research (brief) &middot; 7 min read</span>
-        </div>
-        <div class="featured-item" onclick="loadPiece('essay-3')">
-          <h3>The rise of prediction markets</h3>
-          <span class="tag">Essay &middot; 12 min read</span>
-        </div>
-      </div>
-    `;
-
-    const pieces = {
-      'essay-1': {
-        eyebrow: 'Essay · July 2025',
-        title: 'Business Cycles and Rational Expectations',
-        meta: '14 min read',
-        body: `
-<p>Hello, it's been a while. I spent April and May reading Keynes' <i>General Theory</i> for the first time. It's definitely something I'd like to come back to, but in the meantime I figured I'd spend more time familiarizing myself with the trajectory of 20th century economic thought and how these ideas came to influence what we know as macroeconomics today. What I find striking about many of these books and papers is that they stress the need to acknowledge <i>psychological</i> factors in economic analysis, which is to say that despite it being a data-heavy discipline, there is always an underlying aspect of guesswork: trying to understand how people think, how they react to political and economic changes, and how these behaviors inform the shape of said data (as well as what ought to be done with it).</p>
-<p>Robert E. Lucas Jr.'s essay, "Understanding Business Cycles", is especially salient in how it brought psychology into the late-70s macroeconomic fold. Lucas discusses 'rational expectations' as a crucial concept that economists should pay attention to, not because of a belief that current expectations rely on past experiences (as was the case at the time), but that people's expectations coincide with what is going on at any given point in a macroeconomic model; people actively adjust their behavior in the face of new economic policies, shocks, and other general 'happenings' in the market<a href="#fn1" id="ref1" class="footnote-ref">1</a>. This, and similar developments in the New Classical school of economics, had a profound effect on government policy, as it challenged the idea that aggregate demand management alone would be able to stabilize the economy in the event of a shock in the business cycle.</p>
-<p>Business cycles are particularly important in Lucas' analysis because at the time, there was the widespread belief that business cycles had exogenous, institutional sources and that "once understood, these sources could be removed or their influence mitigated by appropriate institutional changes"<a href="#fn2" id="ref2" class="footnote-ref">2</a>. Lucas, however, believed that business cycles arose as economic/market phenomena, rather than political ones, and that they were a natural part of a capitalist economy. Related to this latter point, business cycle fluctuations are not stochastic, because if they were, they would not take on a cyclical pattern in the first place. In fact, they are the product of "co-movements among different aggregative time series"<a href="#fn3" id="ref3" class="footnote-ref">3</a>; the outputs across certain sectors of industry are all interconnected, which forms the business cycle. Other factors within an economy such as prices, short-term (and to a certain extent, long-term) interest rates, monetary velocity measures, and so on are also 'procyclical', moving along with the overall economic cycle.</p>
-<hr>
-<p></p>
-<h3>Background</h3>
-<p></p>
-<p>In traditional Keynesian economics (particularly the kind that came after the neoclassical synthesis, that which has to do with econometrics), the types of models used in analysis are known as 'reduced-form models'. Here, endogenous variables are expressed as functions of exogenous variables. If we are to analyze a Phillips curve, for instance, the endogenous variables would be employment and inflation, which are subject to the exogenous forces of policy changes, shocks, etc. that then determine the placement of the Phillips curve.</p>
-<p>There were limitations to these models, however, both in their nature and in terms of what these models meant for how policy was conducted. The cause of the significant anti-Keynesian wave of Lucas' time had to do with the 'stagflation' crisis of the 70s and the perceived ineffectiveness of Keynesian policy to address the decade of rising inflation. The weakness in the Keynesian model was its "relative neglect of the effects of demand stimulus upon the general level of prices", recall that inflation doesn't factor in to the <i>General Theory</i> much because Keynes treats both wages and prices as given (i.e. stable), rather than adjusting to clear markets<a href="#fn4" id="ref4" class="footnote-ref">4</a>. The argument from the side of the Keynesian policymakers was that "demand stimulus should not lead to inflation as long as output remained 'below potential'", supported by (in retrospect) overly optimistic models of future economic output, which led to an inflationary bent towards policy "insofar as the economy was perceived to have more slack in it than really existed, even as inflation accelerated"<a href="#fn5" id="ref5" class="footnote-ref">5</a>.</p>
-<p>However, this doesn't render Keynes' framework incorrect; there was a genuine misjudgement of the labor market in the 70s, and it was much tighter and less productive than estimated at the time. The effect of all this were the conclusions that:</p>
-<p></p>
-<ol>
-<li>Current econometric models were insufficient if one wanted to accurately grasp and manage the state of the economy.</li>
-<p></p>
-<li>Data had a time-lag: "the gap between actual and potential output cannot always be measured well 'in real time"<a href="#fn6" id="ref6" class="footnote-ref">6</a>.</li>
-</ol>
-<p></p>
-<p>Tackling these premises, Lucas emphasized a need for microeconomic foundations in macroeconomics, specifically through greater analysis of business cycle theory. At the time, it was believed that business cycles had exogenous ("institutional") sources and that "once understood, these sources could be removed or their influence mitigated by appropriate institutional changes"<a href="#fn7" id="ref7" class="footnote-ref">7</a>. Crucially, this meant that the government was capable of stabilizing the economy in the short run if a slump were to occur, however Lucas argues that too much focus is given to these short-term stabilization policies, which, he adds, are not necessarily the best courses of action in every context, and that this hampers the government's ability to make structural adjustments that promote the long-term health of the economy.</p>
-
-<p>He also criticized the Keynesian models used for policy evaluation on the grounds that they "failed to identify truly 'structural' economic relationships, i.e. relations that could be expected to remain invariant despite a change in the way that economic policy is conducted, because of the way that people's behavior depends upon their expectations" of future interest rates, income, etc.<a href="#fn8" id="ref8" class="footnote-ref">8</a> One such 'invariant' relationship is the nature of individual economic behavior, which is "forward-looking in character", policymakers ought to be thinking about how policy changes impact people's expectations in addition to how they impact the state of affairs within the economy itself<a href="#fn9" id="ref9" class="footnote-ref">9</a>.</p>
-<hr>
-<p></p>
-<h3>Rational expectations</h3>
-<p></p>
-<p>In this paper, Lucas builds on the "individual decision problem" of economic theory, where one begins a period with various stocks of capital and faces "time paths of prices at which he can trade in the present and future"<a href="#fn10" id="ref10" class="footnote-ref">10</a>. Based on the time paths of labor and consumption, he forms a plan for investment. If the economic conditions at the time are in line with the plan, it is executed straightforwardly; if not, a contingency plan is drawn up. But how does our agent conceptualize the future? At the very least, we know that he has to consider market conditions and the outcome of his investments in both near and long-term time frames.</p>
-
-<p>Perhaps it would be better to put our agent into a specific scenario so we can see how he approaches this dilemma. Let us say that he is a single "worker-producer" who makes goods to order at a fixed rate of output per hour; "he comes to his place of work, observes his current selling price, determines how many hours to work that day, sells his produce, then goes home to relax"<a href="#fn11" id="ref11" class="footnote-ref">11</a>. He earns money for his work, which he spends on a variety of goods that differ day-to-day. What happens if his selling price increases 10% one day compared to the average of his selling prices in the past? If we are to think of the psychological aspect, particularly in terms of what this price movement means to him, then we may figure out how this affects his productivity. For instance, if he believes this change was permanent, he would not be inclined to work hard, or for long. If he believes this change was transitory, he would have to think about how much labor he wanted to sacrifice today for extra labor tomorrow.</p>
-
-<p>However, taking into account the transitory and permanent elements of a situation is not dichotomous, which is to say that when an agent thinks about price movements, they evaluate both. To use Lucas' phrasing, the very nature of "stochastic price variability" is a "mix of transitory and permanent components" that are not immediately going to be apparent to our agent, or necessarily reflected in economic data<a href="#fn12" id="ref12" class="footnote-ref">12</a>. Thus, our agent's response to price variation comes to depend on two factors: his interpretation "of the information contained in these changes" and his "preferences concerning intertemporal substitution of leisure and consumption", or how much he values his free time in comparison to work at any given moment<a href="#fn13" id="ref13" class="footnote-ref">13</a>.</p>
-
-<p>Our agent can thus be situated within a general equilibrium "in which his price and output fluctuate, yet aggregate levels [in the rest of the economy] do not"<a href="#fn14" id="ref14" class="footnote-ref">14</a>. However, his responses to price movements will mimic the responses made in the aggregate, and as a whole this will constitute the business cycle. But what explains this symmetry?</p>
-
-<h3>General movements</h3>
-<p></p>
-<p>For the sake of further illustrating our example, it is worth noting that there are two types of price increases: general and relative. General price increases are sustained and occur in the aggregate, we know this as 'inflation'. Relative price increases have to do with the increase in the price of one good relative to another. When thinking about our agent experiencing price increases for his own goods, this is a relative change in the price of his goods in comparison to others, and as mentioned, this change can be either permanent or transitory. If the agent experiences this as an increased demand for his goods, this might lead him to increase production. But when prices in general increase (and we assume no stability in average prices), the agent finds himself without a way to meaningfully respond. Since all inputs have become more expensive, the <i>real</i> price of his goods has not changed; the increase is purely nominal. Thus, he has no incentive to increase production, and his output would remain unchanged.</p>
-
-<p>This becomes more complicated when we factor in the idea that our agent can't actually tell if something is a relative or general price increase, at least initially. During a price increase, a good proportion of firms will end up taking the optimistic route, interpreting the change as a result of an increased demand for their good(s). This puts pressure on other firms to increase their production as well because they are all receiving the same price signals. We can take these correlated responses to result in an aggregated "co-movement" in prices, output, and investment in the wider economy<a href="#fn15" id="ref15" class="footnote-ref">15</a>. This problem of interpretation ultimately explains the business cycle, and why we see synchronized highs and lows rather than uneven expansions and contractions across industries.</p>
-
-<figure>
-  <img src="charts/consumption_output_investment.png" alt="Line chart of real GDP, consumption, and investment from 1947 to 1977, with recessionary periods shaded in grey.">
-  <figcaption>Working in the period that Lucas is writing in, we can see that output, consumption, and investment trend similarly, albeit on different scales. Recessionary periods are highlighted in grey. Source: FRED.</figcaption>
-</figure>
-
-<h3>Sources of price movements</h3>
-<p></p>
-<p>Business cycles are defined by Lucas as "repeated fluctuations in employment, output, and the composition of output, associated with a certain typical pattern of co-movements in prices and other variables"<a href="#fn16" id="ref16" class="footnote-ref">16</a>. Lucas has established the existence of price movements and their responses, but what are their sources? Two distinctions can be made here: secular price movements, which are long-term fundamental shifts in prices driven by underlying economic factors (or in other words, average prices over a period of time); and cyclical price movements, which are short-term, often repetitive trends in prices. Secular movements, particularly in the money supply, have an indirect effect on the business cycle and can be seen as the 'force' that triggers the real business cycle with long and variable lags.</p>
-
-<p>This has to do with the aforementioned 'signal processing problem' that our agent experienced in the section above. If it were true that inflation could be forecasted in the aggregate by using a series of short-term general price movements, one could simply rely on these forecasts to make their business decisions (e.g. if prices are only rising because of inflation, firms would not mistake this for increased demand for their products and would adjust their output, wages, etc. accordingly). The reality is, however, that the economy is judged by its past performance, and such judgements do not necessarily map on to the future (and to an extreme extent, cannot be relied upon at all to indicate its trajectory). Lucas goes on to state that if forecasts <i>were</i> always correct, "the result would be a very tight relationship between money and prices, over even very short periods, and no relationship at all between these movements and changes in real variables", which is to say that monetary changes would be able to affect prices directly without having real effects on output, investment, etc., and as a result, there wouldn't be a business cycle<a href="#fn17" id="ref17" class="footnote-ref">17</a>.</p>
-
-<figure>
-  <img src="charts/inflation_vs_expected_inflation.png" alt="Line chart comparing actual inflation to expected inflation from University of Michigan surveys, 1978 to 2024.">
-  <figcaption>A sample of actual vs. expected inflation using the earliest possible forecasts from the University of Michigan. The two can differ wildly, especially in the event of economic shocks (see: 2008-09), which makes it difficult to make sound assumptions about general price changes in a predictive context. Source: FRED.</figcaption>
-</figure>
-
-<p>For Lucas, what drives business cycles are underlying, fundamental changes in the economy, such as unexpected shocks or a widespread misinterpretation of price signals. Although he cannot exactly explain why these changes must work on a long time frame, he proposes that it is likely because monetary expansion occurs in different ways, and so do its effects. As a result there will inevitably be a lengthy adjustment period where co-movements occur.</p>
-
-<hr>
-<p></p>
-<h3>Implications</h3>
-<p></p>
-<blockquote><p>"The economically literate public has had some forty years to become comfortable with two related ideas: that market economies are inherently subject to violent fluctuations which can only be eliminated by flexible and forceful governmental responses; and that economists are in possession of a body of scientifically tested knowledge enabling them to determine, at any time, what these responses should be. It is doubtful if many who are not professionally committed hold, today, to the latter of these beliefs. This in itself settles little in the dispute as to whether the role of government in stabilization policy should be to reduce its own disruptive part or actively to offset private sector instability. As long as the business cycle remains "in apparent contradiction" to economic theory, both positions appear tenable. There seems to be no way to determine how business cycles are to be dealt with short of understanding what they are and how they occur."<a href="#fn18" id="ref18" class="footnote-ref">18</a></p></blockquote>
-
-<p>Lucas expresses his skepticism of the approach to macroeconomic policy as a series of 'levers' policymakers can control (e.g. fiscal stimulus, interest rate manipulation), in order to mitigate the effects of severe market downturns within the business cycle. More precisely, it is the belief that they are pulling the <i>right</i> levers that Lucas is in contention with. The debate around what exactly economists, politicians, etc. ought to do remains unresolved, as long as the exact nature of business cycle fluctuations remains unknown, both the interventionist and non-interventionist positions can be seen as acceptable. However, Lucas maintains that despite this, policymakers should still make an effort to understand what drives business cycles, which in turn means acknowledging the 'microfoundational' approaches that recognize the dilemmas in which agents find themselves in, along with their ability to adapt to changes in the economy.</p>
-
-<h4>Policy implications</h4>
-<p></p>
-<p>Because of rational expectations, it is reasonable to assume that changes in one area of expectations impacts others. In the context of policymaking, this is an essential consideration. For instance, exploiting the tradeoff in the Phillips curve could mean changing people's expectations about future inflation, thus rendering any gains ineffective<a href="#fn19" id="ref19" class="footnote-ref">19</a>.</p>
-
-<p>In addition to the psychology of individuals and firms, we must also consider how policymakers and central bankers approach their decision-making process. It is important for economic authorities to not seem <i>willing</i> to stimulate the economy to "exploit" the private sector's expectation of low inflation (and subsequent increased hiring rates) in order to achieve high employment without raising prices generally<a href="#fn20" id="ref20" class="footnote-ref">20</a>. If the private sector did get the sense that the central bank was trying to provoke them in any way, they would see any stimulus as too transitory to justify increased investment. Thus, expectations need to be managed. Perhaps it would be better off if the public and private sectors didn't have to play coy with each other, but the combination of signal processing and economic self-interest make it difficult to avoid such behaviors.</p>
-
-<p>Something identified by the New Classical school more broadly is that even when the central bank engages in "discretionary optimization", correctly understanding private sector expectations and acting accordingly, in order to achieve their desired goals, the end result tends to be suboptimal (i.e. inflation, or at least more inflation than expected). What this means in practice is that monetary authorities have forgone making tradeoffs between inflation and economic activity altogether, instead making the "control of inflation the primary goal of monetary policy"<a href="#fn21" id="ref21" class="footnote-ref">21</a>. Crucially, they have also incorporated rational expectations and forward-looking behavior into their models, and as such these ideas are now seen as rather orthodox<a href="#fn22" id="ref22" class="footnote-ref">22</a>.</p>
-
-<div class="footnotes">
-  <ol>
-    <li id="fn1">Woodford, Michael. "Revolution and Evolution in Twentieth-Century Macroeconomics." In Frontiers of the Mind in the Twenty-First Century, 19. Washington, 1999. <a href="#ref1" class="footnote-backref">↩</a></li>
-    <li id="fn2">Lucas, Robert E. "Understanding Business Cycles." In Carnegie-Rochester Conference Series on Public Policy, 5:8, 1977. <a href="#ref2" class="footnote-backref">↩</a></li>
-    <li id="fn3">Lucas, "Understanding Business Cycles," 9. <a href="#ref3" class="footnote-backref">↩</a></li>
-    <li id="fn4">Woodford, "Revolution and Evolution in Twentieth-Century Macroeconomics," 12. <a href="#ref4" class="footnote-backref">↩</a></li>
-    <li id="fn5">Ibid. <a href="#ref5" class="footnote-backref">↩</a></li>
-    <li id="fn6">Ibid., 14. <a href="#ref6" class="footnote-backref">↩</a></li>
-    <li id="fn7">Lucas, "Understanding Business Cycles," 8. <a href="#ref7" class="footnote-backref">↩</a></li>
-    <li id="fn8">Woodford, "Revolution and Evolution in Twentieth-Century Macroeconomics," 21. <a href="#ref8" class="footnote-backref">↩</a></li>
-    <li id="fn9">Ibid., 22. <a href="#ref9" class="footnote-backref">↩</a></li>
-    <li id="fn10">Lucas, "Understanding Business Cycles," 14. <a href="#ref10" class="footnote-backref">↩</a></li>
-    <li id="fn11">Ibid., 16. <a href="#ref11" class="footnote-backref">↩</a></li>
-    <li id="fn12">Ibid., 19. <a href="#ref12" class="footnote-backref">↩</a></li>
-    <li id="fn13">Ibid., 19. <a href="#ref13" class="footnote-backref">↩</a></li>
-    <li id="fn14">Ibid., 20. <a href="#ref14" class="footnote-backref">↩</a></li>
-    <li id="fn15">Ibid., 21. <a href="#ref15" class="footnote-backref">↩</a></li>
-    <li id="fn16">Ibid., 23. <a href="#ref16" class="footnote-backref">↩</a></li>
-    <li id="fn17">Ibid., 24. <a href="#ref17" class="footnote-backref">↩</a></li>
-    <li id="fn18">Ibid., 26. <a href="#ref18" class="footnote-backref">↩</a></li>
-    <li id="fn19">Explanation: If economic stimulus occurs in order to reduce unemployment, we may see higher inflation as a result. <a href="#ref19" class="footnote-backref">↩</a></li>
-    <li id="fn20">Woodford, "Revolution and Evolution in Twentieth-Century Macroeconomics," 23. <a href="#ref20" class="footnote-backref">↩</a></li>
-    <li id="fn21">Ibid. <a href="#ref21" class="footnote-backref">↩</a></li>
-    <li id="fn22">E.g. inflation targeting is not just about controlling prices, but shaping expectations about future inflation. Monetary policy 'works' because the central bank is capable of sending authoritative signals: if firms believe that the central bank is committed to low inflation, they will set wages and prices accordingly, helping to stabilize the economy without heavy intervention. <a href="#ref22" class="footnote-backref">↩</a></li>
-  </ol>
-</div>
-        `
-      },
-      'essay-2': {
-        eyebrow: 'Essay · March 2025',
-        title: 'The financial instability hypothesis',
-        meta: '19 min read',
-        body: `
-<p>What is 'the economy' made up of? I begin with this kind of rhetorical question because there are many ways to answer this, with various configurations of words like 'production', 'consumption', and 'exchange' that can get more or less specific depending on who is asking. But moreover, would one consider the stock market a sector of the economy? The impulse of neoclassical economics is to say that the stock market (and the financial sphere in general) is not, at least, a primary part of the economy because it is not productive in nature; it does not produce goods or services and is merely an exchange of already-existing values. To determine whether or not an economy is 'doing well', measures like GDP are taken into account. We don't look towards the S&P or NASDAQ as they are more so gauges of speculation. At most, we may all agree that equities form a secondary market, but to relegate it to such a position may seem to undermine what finance capital is capable of. If the financial sphere isn't doing too well, industries and other 'real' productive spheres of the economy do fail. I do not need to tell you that financial crises occur and have real effects on employment, prices, and so on.</p>
-<p>Hyman P. Minsky gets at this impulse quite presciently through his work, over two decades before the 2008 financial crisis. Why was it that financial instability occurred, and how was it generated within the financial sphere? He largely saw such instability as endogenous, i.e. as emerging from within the financial system, rather than exogenously pushed onto it through monetary policy or the actions of the Central Bank (although policy decisions can shape what goes on within these systems). There is a large irony, or contradiction, or whatever you'd like to call it, where finance capital operates through the borrowing and lending of money under the assumption that debts will be paid off, but speculative liability structures can allow for the due date to be pushed back indefinitely, so firms don't really <i>have</i> to pay them off. Since firms are incentivized to speculate (especially during times of prosperity), short-term debts spiral into perpetual long-term debts. So what happens when one day, the bill finally comes due? A crisis emerges.</p>
-<p>Minsky's seminal work is his 407-page book, <i>Stabilizing an Unstable Economy</i>, originally published in 1986. For the purposes of not wishing to simply regurgitate this book, and also because I'm having a lot of fun in the Levy School of Economics' Minsky Archive, I will be drawing from a number of his essays and lectures, namely the essay "The Financial-Instability Hypothesis: Capitalist Processes and the Behavior of the Economy" (1982), to explain some of his core ideas.</p>
-<p>Minsky famously studied under Joseph Schumpeter and Wassily Leontief as he completed his economics PhD at Harvard. However, much of what developed his theory of financial instability was a re-evaluation<a href="#fn1" id="ref1" class="footnote-ref">1</a> of the work of John Maynard Keynes in the 1980s. Building on the standard theory, he saw a reluctance among the standard economists of his time to acknowledge the interplay between the financial system and what was referred to as the 'real' economy. As he states in his Financial Instability Hypothesis essay, "Whereas standard theory views an economy as producing and consuming outputs, a Wall Street perspective views an economy as producing and allocating profits"<a href="#fn2" id="ref2" class="footnote-ref">2</a>. We can interpret the Wall Street standpoint as perceiving a managerial layer over the 'real' economy where profit flows dictate what exactly can be produced and what people are able to consume. To be clear, this layer is permeable, but nonetheless, as finance capital began to exert a greater influence on the behavior of the economy at the time, Minsky saw a necessity in moving away from the standard perspective and into one that acknowledged the role of finance capital in the modern economy.</p>
-<hr>
-<p></p>
-<h3>Theoretical background: Keynes and Kalecki</h3>
-<p></p>
-<p>Note that during Keynes' time, the type of capitalism that existed was composed of a "small government economy with a sophisticated and evolving financial structure" that had central banks that were reluctant to intervene, whereas the type of capitalism that exists today is much larger in scope with even more 'sophisticated and evolving' financial structures with a central bank that <i>is</i> willing to intervene<a href="#fn3" id="ref3" class="footnote-ref">3</a>. Considering the role that the central bank plays in the economy, this view recognizes that policy decisions have consequences, but also that the financial system may be lulled into a false sense of security by the presence of the central bank's lender of last resort (colloquially, 'bailout') capabilities. While the bank does have a responsibility to use this power to mitigate a widespread collapse, it must also be said that it shoulders the burden of financial strain as a result. But more on central banking later. Let's turn to the first part of the statement about the financial structure of modern capitalism.</p>
-<p>When it comes to the standard Keynesian theory, there exists a study of business cycles and speculation, but insofar as economic activity is largely determined by the government and central bank. What Minsky aims to do here is to add onto the standard theory, emphasizing that economic behavior is tied to financial structures, specifically that the robustness or fragility of such structures affect the financial sphere in general. For instance, if we have a fragile financial structure, instability is more likely to be generated. In the event of a collapse, we will see a ripple effect by way of decreased household spending, corporations cutting back on investment and production, and so on. Unfortunately, there is a tendency in capitalism towards creating fragile structures due to the monetary incentives towards innovating in the realm of financial instruments, often without regard to how tenable they are in the long-run. Analyzing financial structures in tandem with the cyclical nature of modern capitalism leads to the conclusion that "the internal workings of a capitalist economy generate financial relations that are conducive to instability"<a href="#fn4" id="ref4" class="footnote-ref">4</a>.</p>
-<p>Tying finance to the rest of the economy, Michal Kalecki was one to point out that firm's profits help finance their commitments, and that there is a link between their commitments on financial instruments (debt repayment) and financing. According to Kalecki's profit equation, <i>profits = investment + dividends - household saving - government saving - foreign saving</i>.<a href="#fn5" id="ref5" class="footnote-ref">5</a> This sort of insight can help with understanding the complex nature of the financial system and the variables that firms need to keep in mind, however Minsky does see a need to zero in on the 'investment' portion of this equation, tying investment profit to demand conditions:</p>
-<ol>
-<li>Profits from producing goods depend on net profit (the profit after production and labor costs). This is understood.</li>
-<p></p>
-<li>Profits from purchasing investment instruments depend on what kind of investments are available to you. The types of instruments available to you in the first place are dependent on your profits, both prospective and realized, because lenders need to be able to see that you can give them their money back.</li>
-</ol>
-<p></p>
-<p>This is all to say that investment and profits are a two-way street. It is not just that investment helps determine profit, but that profit determines the type of investment available to the firm. Furthermore, the interconnected nature of modern finance creates the corollary that the financial climate also informs the type of liability structure a firm chooses, i.e. whether they decide to take on more or less risk.</p>
-
-<h3>The financial instability hypothesis</h3>
-<p></p>
-<p>Minsky presents a model of the economy that can be seen as a set of balance sheets with three components: cash-payment commitments, anticipated cash flows, and realized cash flows<a href="#fn6" id="ref6" class="footnote-ref">6</a>. These three are linked together in examining the terms of borrowing and lending between firms and other such entities. Firms can acquire money through producing and selling goods; borrowing, either <i>de nova</i> or by rolling over debt; selling assets; or drawing from their cash reserves<a href="#fn7" id="ref7" class="footnote-ref">7</a>. Typically, the income earned from production is used to fulfill payment commitments. When negotiating payment terms with lenders, projected cash flows (gross profits after taxes) are examined by the lender(s) along with the realized cash flows.</p>
-<p>The finished agreement goes on to form a part of a firm's liability structure. This can broadly be defined as a firm's configuration of positions in capital assets, their (re)financing positions, and their payment commitments (interest, dividends, etc.). In short they form the structure of "money now for money later exchanges"<a href="#fn8" id="ref8" class="footnote-ref">8</a>.</p>
-<p>The crux of the hypothesis, as mentioned before, has to do with the tension between the lender-borrower agreement and the incentives towards investment. But how does this play out? Minsky highlights three financing methods (ways of 'making position') that correspond to increasing degrees of indebtedness:</p>
-
-<h3>Hedge financing</h3>
-<p></p>
-<p>In this structure, the firm "expects the cash flow from operations to cover cash commitments"<a href="#fn9" id="ref9" class="footnote-ref">9</a>. That is, their profits are such that they can fully repay their loans, and it's worth mentioning that they ensure this can be done by taking on long term debts that do not require any repayment of principle in the short term. The firm also has cash or cash-equivalent assets that they hold as a 'hedge' against anything that could affect their income. This is the most stable type of financing, as financial difficulties can only occur if there is a fall in the firm's income. Insofar as a widespread financial crisis is concerned, a failure in a hedge financing unit will not cause any "downward financial instability", which is to say that it will largely be contained within the firm itself<a href="#fn10" id="ref10" class="footnote-ref">10</a>.</p>
-
-<h3>Speculative financing</h3>
-<p></p>
-<p>In this structure, the firm does not have enough cash coming in to pay the debt completely, nor do they have reserves to fall back on. The firm pays the interest only and rolls over (reinvests) the principle. Put most simply, this type of financing is characterized by "any financing of long-term assets with short-term debt"<a href="#fn11" id="ref11" class="footnote-ref">11</a>. This structure is characteristic of entities like banks and treasuries with floating (short-term) debts.</p>
-
-<h3>Ponzi financing</h3>
-<p></p>
-<p>In this structure, firms cannot make payment commitments at all through current or prospective earnings and must therefore increase their indebtedness in order to make repayments. Ponzi finance characterizes firms that make long-term investments in assets that are only viable if they appreciate. "Whereas a unit engaged in rollover or speculative finance can carry on forever, provided interest due is earned, Ponzi financing has a natural terminal point as equity falls to zero"<a href="#fn12" id="ref12" class="footnote-ref">12</a>.</p>
-
-<p>These financing methods are not set in stone. Indeed, Minsky sees these methods as tied to the stages of the business cycle. When the majority of firms have a hedge financing structure, short-term financing is readily available on favorable terms in order to incentivize the use of these instruments over long-term financing. As more firms become attracted to short-term financing, the short-term financing of long-term positions is increasingly taken up. An increase in profits in the aggregate will also 'validate' the decisions of the borrowers and lenders to engage in a speculative financial model<a href="#fn13" id="ref13" class="footnote-ref">13</a>. A firm with a speculative structure may turn to a Ponzi financing structure when:</p>
-
-<ol>
-<li>Realized cash flows are lower than expected. If net profits are not enough to sustain even repayments on the principle, firms will increase their indebtedness to make payment commitments.</li>
-<p></p>
-<li>Interest rates rise beyond expectations.<a href="#fn14" id="ref14" class="footnote-ref">14</a> Speculative financing depends on being able to refinance at a stable, low interest rate. As the refinancing amount increases, "the short rates move up relative to long rates, and the cost of carrying that short debt increases"<a href="#fn15" id="ref15" class="footnote-ref">15</a>. If there is a rise in interest rates, payment commitments will rise beyond what is expected, so the firm has no choice but to move to a Ponzi structure.</li>
-<p></p>
-<li>A firm pursues a very aggressive investment strategy. This is sort of idiosyncratic and can be tied to the explanations above, but this encompasses instances where firms intentionally increase their indebtedness without regard to cash flows. Minsky notes that during the leveraged buyout episodes of the 1980s, some deals included payment-in-kind bonds where debtors agreed to pay interest with additional debt<a href="#fn16" id="ref16" class="footnote-ref">16</a>.</li>
-</ol>
-
-<p></p>
-<p>The main characteristic of Ponzi finance is that the prospect of making position is pushed further and further into the future until "the capitalization of interest may lead to debts that are far beyond what expected cash flows can support"<a href="#fn17" id="ref17" class="footnote-ref">17</a>. When the economy is heavily weighted towards Ponzi and speculative finance structures, it is only a matter of when, not if, financial crisis will occur. Post-crisis, firms will return to a hedge financing structure until confidence in investment grows again<a href="#fn18" id="ref18" class="footnote-ref">18</a>.</p>
-
-<h3>Example: Junk bonds and leveraged buyouts</h3>
-<p></p>
-<p>It may be helpful here to illustrate how Ponzi financing leads to instability. In a 1992 lecture titled "Financial Crises: Systemic or Idiosyncratic", Minsky references the 'junk bonds' present in corporations' portfolios during the highly leveraged buyout epidemic of the 1980s. Firms turned to high-yield bonds with very low margins of safety in order to acquire the funds to purchase another company, hoping that its asset sales, cash flows, or even the sale of the company altogether, would be able to pay off the firm's debt. Some key points are highlighted here:</p>
-<blockquote><p>"If you have a highly leveraged organization, one of the things that cash flow wizards usually do is allocate a portion of what would otherwise be repaid earnings, to debt redemption; to pay off the debt. After all, the game in the highly leveraged buyout is always to buy the company, and within three or four years or less, be able to sell it off at a premium to what the equity was before via rapid reduction of debt. But if you're using cash flows to clean up balance sheets, you're not using cash flows to finance investment expenditures. What you have immediately as a consequence in the junk bond phenomenon is a downward shift in the demand curve. Now all of these had presumably, small margins of safety. But if investment goes down as a result, aggregate profit goes down, aggregate capital income goes down, and the demand curve goes down; so instead of having independent demand curves, the demand curves are linked. And therefore instead of having bonds or mortgages that perform independently of each other, they [can] all be affected by the same virus... There are no independent managers out there in the world. And if all of your financing clans are based upon the demand curves out there, they're going to move in the same way."</p></blockquote>
-<p>With this example, there is a link between the untenability of highly indebted firms and endogenous financial instability. If firms are preoccupied with debt repayments, nothing is being invested in the firm itself. As firms spend less on producing goods and as they lose whatever competitive advantage they may have had, profits fall, their cash flow decreases, and aggregate demand decreases as well. This forces the firm into a state of collapse along with those it has any connections to. If the weight of speculative and Ponzi finance is great enough in the financial system, nobody will be able to make position; a crisis will occur. In this sense, inner turmoil in the financial industry has effects on the rest of the economy.</p>
-
-<h3>From a lender's perspective</h3>
-<p></p>
-<p>Much has been said about the borrower's behavior: how the financial climate influences their liability structure, how they may move from one structure to another, how a widespread failure to make repayments results in financial collapse. But it may be worth discussing the lender's situation and how they may react to firms reaching the terminal stage of Ponzi financing. In short, a default on payments will place the lender in debt (perhaps they may also turn to Ponzi financing structures if they still have commitments to make) but also makes it so that funds are no longer being provided for investment.</p>
-<p>Lending is quite precarious. When a borrower aims to purchase a position-making instrument, there are a few criteria that must be fulfilled. One, the instrument must have high liquidity (i.e. large transactions can be executed without resulting in large changes in price). Two, there must be a broad market for that instrument. And in many cases, there must also be a residual market maker who can create the former two conditions if needed (usually the central bank). These instruments must also be able to generate cash at the "initiative" of the money manager, if they fall short of anticipated levels or if there is a forced attempt to make position using assets that are not usually used for that purpose (e.g. municipal bonds) and prices fall, sufficient cash will not be raised<a href="#fn19" id="ref19" class="footnote-ref">19</a>.</p>
-<p>When debts cannot be fulfilled because profit flows are lower than anticipated, future profit flows lower as a result. This is according to the observation that "the market reaction to a disequilibrium tends to make things worse, not better"<a href="#fn20" id="ref20" class="footnote-ref">20</a>. However, profit flows can be sustained (and even induced) through intervention, as has been the case in the US post-WWII.</p>
-
-<h3>Central banking</h3>
-<p></p>
-<p>The central bank is seen to have a responsibility to mitigate financial crises<a href="#fn21" id="ref21" class="footnote-ref">21</a>, having certain regulatory functions and capabilities to ensure that firms are still able to make position even if they do not have the funds to do so. When central banks exercise this power, it is as the 'lender of last resort'. For Minsky, there are three distinct aspects of this function:</p>
-<p></p>
-<ol>
-<li>When the price of the asset that a firm usually uses to make position starts to fall, they look to sell their other assets. As this spreads, the prices of a large number of financial instruments start to fall and firms' ability to borrow (or even remain solvent) decreases. Thus the central bank has a responsibility to step in and prevent a mass fall in asset values either by providing the funds for position-making or extending some kind of credit to the firms. This responsibility is especially large when the proportion of speculative or Ponzi finance in the financial system is also large<a href="#fn22" id="ref22" class="footnote-ref">22</a>.</li>
-<p></p>
-<li>In the aftermath of a crisis brought on by highly speculative finance, the central bank ought to also restructure debts so that firms can shift towards a hedge finance model to make the financial structure more robust.</li>
-<p></p>
-<li>And: "to guide the evolution of the financial system so that the central bank remains in touch with the position-making markets and so that the weight of speculative and Ponzi finance is constrained"<a href="#fn23" id="ref23" class="footnote-ref">23</a>. That is, they must ensure the robustness of the economy in the long-run.</li>
-</ol>
-<p></p>
-<p>It is this third function that has become tenuous. Remaining 'in touch' with position-making markets has proven to be difficult for the Federal Reserve, as firms' position-making strategies have shifted from the primary usage of Treasury bills (e.g. in the decade after WWII) to a much more varied portfolio of investment instruments. This variation has largely gone unchecked and uncontrolled. Furthermore, the weight of the first two responsibilities has preoccupied the Fed to the extent that they are no longer able to play a guiding role in structuring the economy.</p>
-<p>Nonetheless, there is a difficult bind that the central bank, namely the Federal Reserve, has found themselves in as a result of the lender function. The conclusion that must be drawn here is that the financial sector ought to be aware that lender of last resort functions are not to be taken lightly or exercised frivolously. Just as the central bank has a responsibility to mitigate financial collapse, the financial sphere ought to ensure that it does not generate the conditions for such a collapse in the first place. The issue is that firms are not concerned with doing this; there is just too much money to be made.</p>
-
-<hr>
-<h3>Conclusion</h3>
-<p></p>
-<p>In Keynes' <i>General Theory</i>, there exists "an underlying view that the financial system is given to bursts of euphoria, in which asset values and liability structures become uncoupled from the underlying cash flows that productivity generates. This means that the depressions of history are normal functioning events in an economic order where profits are available from speculating on asset appreciation"<a href="#fn24" id="ref24" class="footnote-ref">24</a>. Four points here, with applications from Minsky's hypothesis:</p>
-<p></p>
-<ol>
-<li>The financial system operates according to business cycles, the peaks of which are referenced as these moments of 'euphoria'.</li>
-<p></p>
-<li>Increased optimism during periods of prosperity means that firms' liability structures become increasingly fragile, as the pressure to make position lessens and cash flows are steady. When this period is over, firms end up in a scenario where their existing cash flows do not cover interest payments, much less the debt itself, and they are forced to finance their (re)payments through increasing their indebtedness.</li>
-<p></p>
-<li>This becomes true for more firms as more money goes into paying off interest, maintaining dividend output, etc. than it does financing goods-production (i.e. what would actually increase cash flows). As investment goes down, so does aggregate demand, and this happens across the board.</li>
-<p></p>
-<li>Because of the cyclical nature of capitalism, even when there is some sort of shock to the financial system, firms will gradually warm up to speculative finance pos episode of instability.</li>
-</ol>
-<p></p>
-<p>Minsky's thesis is that a modern capitalist economy is "inherently unstable" and these episodes of collapse are the product of an "endogenous incoherence plus policy interventions and institutional constraints"<a href="#fn25" id="ref25" class="footnote-ref">25</a>. We have seen the endogenous incoherence created by the business cycle, the role of the central bank in containing crises, and the constraints in which both finance and government must act within. I am not sure how relevant Minsky's hypothesis is to the looming threat of recession today. For a long time people believed that increased inflation, the large amount of public and private debt in the economy, and other such concerns were destabilizing the economy, and that a second Great Depression was imminent. Indeed, even Minsky acknowledged these fears in the 90s.</p>
-<p>It is quite clear that the US government aims to create some sort of economic reform through brute-force policy decisions. To what extent, with what policies, and to what end, nobody is really sure about. What <i>has</i> been undertaken, at least, is a paring down of federal funding and staffing, courtesy of the newly-implemented Department of Government Efficiency. The department is operating under the assumption that the federal government has become a bloated, wasteful entity, and that it is time to begin reorganizing the government from first principles. A little more niche among Trump's base is the belief that the Federal Reserve ought to be abolished as well, it is only quasi-governmental, after all. But the idea that large swathes of government can go without consequence (and that somehow, it will actually improve the lives of the average American) requires a cautious approach, especially considering the lack of alternative plans set forth by the administration.</p>
-<p>There is a very difficult tension between the financial system and 'governance', specifically the central bank. The former aims to fuel economic activity, while the latter aims to provide structure to it. If firms are not willing to limit their activities in a way that ensures the health of the economy in the long term, the government and central bank ought to step in and make the necessary policy decisions to do so, yet they have largely been playing reactively. Despite this, a second depression has not occurred, and we are currently 17 years removed from the last purely financial recession. Unfortunately, much of the animosity towards these institutions does not recognize this at all. As was the case in 1982, it remains the case today: "It is ironic that it is currently fashionable to hold big government and the big bank in contempt for their success in preventing a catastrophic depression has created the complacency that fathered this contempt"<a href="#fn26" id="ref26" class="footnote-ref">26</a>.</p>
-
-<hr>
-<p></p>
-<h2>Appendix 1: <i>Hedge, speculative, and Ponzi financing and their relationship to interest rates</i></h2>
-<p></p>
-<ol>
-<li>Hedge structures are unaffected by rate changes as their cash flows are more than enough to cover operations and (re)payments.</li>
-<p></p>
-<li>Speculative structures are sensitive to rate changes due to their reliance on financial markets functioning 'normally'. A rise in rates will raise payment commitments.<a href="#fn27" id="ref27" class="footnote-ref">27</a></li>
-<p></p>
-<li>Ponzi finance firms are especially sensitive to rate changes. If rates rise, not only will their payment commitments increase, but their expected payoffs will also decline, as these capital asset values are "inversely related to interest rates" (that is, a rise in borrowing costs makes investment less enticing, leading to a decline in the price of stocks, bonds, etc.).<a href="#fn28" id="ref28" class="footnote-ref">28</a></li>
-</ol>
-
-<div class="footnotes">
-  <ol>
-    <li id="fn1">And indeed, even a rehabilitation of Keynes' philosophy. Keynesian thought was applied multiple times in the creation of 20th century macroeconomic policy, from the neoclassical synthesis to New Keynesianism. However, Minsky saw a critical failure on the part of these movements to recognize the role of the financial system in creating a holistic understanding of how the economy behaves. <a href="#ref1" class="footnote-backref">↩</a></li>
-    <li id="fn2">Hyman Minsky, "The Financial-Instability Hypothesis: Capitalist Processes and the Behavior of the Economy," in Financial Crises: Theory, History, and Policy, eds. Charles P. Kindleberger and Jean-Pierre Laffargue (Cambridge, England: Cambridge University Press, 1982), 20. <a href="#ref2" class="footnote-backref">↩</a></li>
-    <li id="fn3">Hyman Minsky, "Endogeneity of Money," in Nicholas Kaldor And Mainstream Economics: Confrontation Or Convergence?, eds. Edward J. Nell and Willi Semmler (New York, NY: St. Martin's Press, 1991), 210. <a href="#ref3" class="footnote-backref">↩</a></li>
-    <li id="fn4">Minsky, "The Financial-Instability Hypothesis," 36. <a href="#ref4" class="footnote-backref">↩</a></li>
-    <li id="fn5">Ibid., 28. <a href="#ref5" class="footnote-backref">↩</a></li>
-    <li id="fn6">Ibid., 20. <a href="#ref6" class="footnote-backref">↩</a></li>
-    <li id="fn7">Hyman Minsky, "Stabilizing an Unstable Economy: The Lessons for Industry, Finance and Government," in Weltwirtschaft und unternehmerische Strategien: Wirtschaftspolitik im Spannungsfeld zum Innovationsprozess (Global Economy and Entrepreneurial Strategies: World Economy in the Economic Field to the Innovation Process), ed. Karl Aiginger (Wien, Austria: Österreichische Investitionskredit Aktiengesellschaft: Österreichisches Institut für Wirtschaftsforschung, 1986), 35. <a href="#ref7" class="footnote-backref">↩</a></li>
-    <li id="fn8">Ibid. <a href="#ref8" class="footnote-backref">↩</a></li>
-    <li id="fn9">Hyman Minsky and Mark Vaughan, "Debt and Business Cycles," Business Economics 25, no. 3 (1990): 26. <a href="#ref9" class="footnote-backref">↩</a></li>
-    <li id="fn10">Minsky, "The Financial-Instability Hypothesis," 23. <a href="#ref10" class="footnote-backref">↩</a></li>
-    <li id="fn11">Minsky and Vaughan, "Debt and Business Cycles," 26. <a href="#ref11" class="footnote-backref">↩</a></li>
-    <li id="fn12">Ibid. <a href="#ref12" class="footnote-backref">↩</a></li>
-    <li id="fn13">Minsky, "The Financial-Instability Hypothesis," 30. <a href="#ref13" class="footnote-backref">↩</a></li>
-    <li id="fn14">See Appendix 1 for more on financing structures and their relation to interest rates. <a href="#ref14" class="footnote-backref">↩</a></li>
-    <li id="fn15">Hyman Minsky, "Financial Crises: Systemic or Idiosyncratic," The Crisis in Finance (conference at the Levy Economics Institute of Bard College, Annandale-On-Hudson, NY, April 4, 1991). <a href="#ref15" class="footnote-backref">↩</a></li>
-    <li id="fn16">Minsky and Vaughan, "Debt and Business Cycles," 26. <a href="#ref16" class="footnote-backref">↩</a></li>
-    <li id="fn17">Minsky, "Stabilizing an Unstable Economy," 36. <a href="#ref17" class="footnote-backref">↩</a></li>
-    <li id="fn18">Note that "if the recessions are mild then there will be an upward trend in the ratio of speculative and Ponzi finance as a result of the way short-run finance is linked to the financing of investment" (Ibid., 37). That is, firms will opt to engage in speculative financing in order to make up for lost ground during the recession. <a href="#ref18" class="footnote-backref">↩</a></li>
-    <li id="fn19">Minsky, "The Financial-Instability Hypothesis," 31. <a href="#ref19" class="footnote-backref">↩</a></li>
-    <li id="fn20">Ibid., 37. <a href="#ref20" class="footnote-backref">↩</a></li>
-    <li id="fn21">Note that 'depression' and 'financial crisis' are two separate things. What the central bank does is contain crises so that they do not lead to depressions. However, every depression has been associated with a financial crisis, as Minsky states in his 1991 lecture "Financial Crises: Systemic or Idiosyncratic". <a href="#ref21" class="footnote-backref">↩</a></li>
-    <li id="fn22">Ibid., 35. <a href="#ref22" class="footnote-backref">↩</a></li>
-    <li id="fn23">Minsky, "The Financial-Instability Hypothesis," 35. <a href="#ref23" class="footnote-backref">↩</a></li>
-    <li id="fn24">Minsky, "Stabilizing an Unstable Economy," 43. <a href="#ref24" class="footnote-backref">↩</a></li>
-    <li id="fn25">Ibid., 31. <a href="#ref25" class="footnote-backref">↩</a></li>
-    <li id="fn26">Minsky, "The Financial-Instability Hypothesis," 27. <a href="#ref26" class="footnote-backref">↩</a></li>
-    <li id="fn27">Minsky, "The Financial-Instability Hypothesis," 23. <a href="#ref27" class="footnote-backref">↩</a></li>
-    <li id="fn28">Ibid. <a href="#ref28" class="footnote-backref">↩</a></li>
-  </ol>
-</div>
-`
-        },
-      'essay-3': {
-        eyebrow: 'Essay · October 2024',
-        title: 'The rise of prediction markets',
-        meta: '12 min read',
-        body: 
-`<p>It is no question that the smartphone has become a ubiquitous, societally-reorienting technology. Almost two decades after the iPhone was announced, and at a time when over half the world's population owns a smartphone, we are now seeing some of the longer-term effects that this ubiquity has had in financial markets. With the rise of sites like Polymarket, PredictIt, and Kalshi, we can see a variety of phenomena that can be traced to the past 10, or even 20, years or so of financial and technological innovations, culminating in the proliferation of retail trading apps. The ability to move money, track markets, and discuss them on social media has made speculation much more accessible for the average person.</p>
-<p>This explosion of retail investing can be traced in significant part to pandemic-era stimulus efforts<a href="#fn1" id="ref1" class="footnote-ref">1</a>. Those who were willing to take on more risk would find themselves in the niche but quickly growing sphere of 'decentralized finance', with 2022 being a cultural apotheosis for this industry. Decentralized finance, and by extension cryptocurrency, are not new developments by any means. Bitcoin was established in 2009 as a new type of currency that did not rely on traditional banking systems, operating instead through its own distributed ledger systems. As the cryptocurrency industry grew, the issue of government regulation began to loom. Companies devised ways of introducing stability into notoriously illiquid, volatile markets through the creation of 'stablecoins' backed by a benchmark asset (for instance, USDC, the currency used on Polymarket, is pegged to the value of a fiat U.S. dollar). These coins, however, may fail to keep adequate reserves, and companies such as Tether and Bitfinex have come under fire for underreporting their assets<a href="#fn2" id="ref2" class="footnote-ref">2</a>. Both presidential candidates are now including cryptocurrency initiatives in their campaigns, further legitimizing their presence but nonetheless marking a deviation from their original purpose as an 'autonomous' form of currency<a href="#fn3" id="ref3" class="footnote-ref">3</a><a href="#fn4" id="ref4" class="footnote-ref">4</a>.</p>
-<p>It seems as though these developments are culminating in something that makes use of people's newfound participation in speculative markets, largely mediated through their phones. Prediction markets in themselves are not novel phenomena either, but the infrastructure provided by decentralized finance has allowed prediction markets to rise out of relative obscurity and gain an audience they would not have had if they had remained integrated with traditional financial institutions, private businesses, and academia. Much of this has to do with regulatory ambiguity; there are many grey areas when it comes to what the SEC is and is not enforcing as a security, and a comprehensive legal framework has yet to emerge for this asset class. So far, the operative definition of a security from the Howey Test of 1946 remains in use: "an investment of money in a common enterprise with profits to come solely from the efforts of others"<a href="#fn5" id="ref5" class="footnote-ref">5</a>. Under this standard, the SEC would make the case that all cryptocurrencies are securities. However, stablecoins seem to be exempt from this definition, given that a Binance case was dropped earlier this year on the basis that stablecoins are not profitable, making it more difficult to argue that they have any real investment upside.<a href="#fn6" id="ref6" class="footnote-ref">6</a></p>
-<p>And when it comes to the use of stablecoins to participate in a speculative prediction-based market, regulation is unclear. The speed and ease with which people can adopt cryptocurrency payments and set up decentralized finance projects, without needing approval from traditional financial institutions or government, means that the state may not be able to keep up with new developments. However, it has never stood idly by in the growth and development of the market. Tracing how these platforms emerged, and why they remain so difficult to regulate, reveals the structural relationship between markets and states that political economist Karl Polanyi mapped in his 1944 book, <i>The Great Transformation</i>.</p>
-<hr>
-<p></p>
-<p>Polanyi's concepts are perhaps most frequently placed within a broader literature devoted to studying the history of the world economy, especially as it relates to globalization and industrialization, but most central to his economic thought is his contention with the laissez-faire economic policy of 19th century Britain and the idea of a 'self-regulating' global free market. In <i>The Great Transformation</i>, he emphasizes the role of the state in creating a framework for which this market is able to operate within, giving it the <i>appearance</i> of self-regulation while the state either intervenes periodically or sets up guardrails to shape the market.</p>
-<p>While pre-industrial societies had markets, they were never reproduced to the extent that they developed what he calls the "market pattern": a repeated 'barter, truck, and exchange' within a given society that allows for the formation of a market economy<a href="#fn7" id="ref7" class="footnote-ref">7</a>. The development of this pattern was not organic; it was only able to grow and sustain itself due to state restrictions that reined in competition, preventing monopolies from disrupting the "organized system[s] of production and distribution" (e.g. labor, supply chains) already in place<a href="#fn8" id="ref8" class="footnote-ref">8</a>. The idea is that markets ought to be competitive, and for them to remain as such, there should be some form of regulatory body to prevent any individual firm from dominating the field and stifling competition. This connection between state and market is named a "double movement", suggesting the simultaneous, reactive relationship the two entities have with each other<a href="#fn9" id="ref9" class="footnote-ref">9</a>.</p>
-<p>This is an ambitious proposal, and is one that raises serious questions about the appropriate reach of market mechanisms in policy and governance. Whatever Coplan's aspirations for the platform, Polymarket was ordered to pay a $1.4 million fine to the CFTC in 2022, alongside orders to ban American users from trading on the platform after it was found that Polymarket was selling their contracts without prior government approval<a href="#fn11" id="ref11" class="footnote-ref">11</a>. The platform has since come under investigation for a series of pro-Trump bets totaling $30 million, which shifted market odds to approximately 60% in Trump's favor at a point when both candidates were polling at roughly 49% on Polymarket in the beginning of October.</p>
-<p>This event signals something that entrepreneurs in decentralized finance seem to continually rediscover, which is to say that the market's 'embeddedness' in society is a structural relationship rather than a spontaneous one. Within a market society it is in the market's interest to remain on good terms with the state: the state ensures that markets remain competitive, and investors comply with the government to ensure their capital is protected. But because both parties are pursuing their own distinct ends, this can give rise to conflict and a resultant instability that disrupts the social fabric. Decentralized market initiatives meant to break away from established institutions and guide the world to a freer or more egalitarian economy eventually encounter this limit at one point or another.</p>
-<p>But this is not to say that regulation always prevails. Polanyi is careful to note how these reactive, protectionist attitudes do not last long. Within a market society, both the state and the market will constantly be engaged in a cycle of double movement. Since the market economy is embedded in the social landscape and any attempts to promote protectionism operate within the sphere of market dominance, entrepreneurs will eventually adapt and find new ways of skirting the bounds of regulation, with the crypto/fiat dichotomy being just one such occurrence.</p>
-<p>Moreover, the market and state cannot be regarded as monoliths. Just as a government is made up of small groups of people with competing political interests, there are schisms one has to navigate within the realm of entrepreneurs and market actors. Decentralized finance is not easily separated from traditional financial institutions, which are interested in gaining control over a burgeoning technology. At the same time, these cryptocurrency companies are also willing to partner with established ones for leverage and legal support.</p>
-<hr>
-<p></p>
-<p>If the market is 'embedded' in society, is it possible to 'disembed' it at all? Polanyi was very optimistic about the onset of social democracy and an increased acceptance of government interventionism, having seen the New Deal reforms and wartime restructuring efforts take place while writing <i>The Great Transformation</i>. Unfortunately, this did not come about, and markets seem even more inseparable from political and everyday life, in no small part due to the increased complexity and intermingling of both markets and institutions. What may explain this difficulty, beyond just action and reaction, is the fundamental draw of the market. Polanyi outlines something like this here, with the following passage referring to a tribal society's economic logic<a href="#fn10" id="ref10" class="footnote-ref">10</a>:</p>
-<blockquote><p>"The outstanding discovery of recent historical and anthropological research is that man's economy, as a rule, is submerged in his social relationships. He does not act so as to safeguard his individual interest in the possession of material goods; he acts so as to safeguard his social standing, his social claims, his social assets."<a href="#fn12" id="ref12" class="footnote-ref">12</a></p></blockquote>
-<p>So, for Polanyi, the incentive towards participating in a market has little to do with material interest. He uses the example of a tribal society where "the individual's economic interest is rarely paramount", but "the maintenance of social ties is crucial"<a href="#fn13" id="ref13" class="footnote-ref">13</a>. That is, this type of society is bound to materially provide for all of its members, but another reason why goods circulate is because there is utility in using them to 'move' one's social position around within their environment (and also to ensure that a person is able to continue participating in their society and reap its rewards). A person employs both social ties and economic interests in tandem to secure their well-being; thus, economic interests are ultimately social in nature and vice-versa. Granted, the tribal society has not persisted, but the basic impulse remains: market actions are motivated by a connection to the collective society. What is occurring, when one puts money into (or takes money out of) a market, is a contribution to a signal. That way, the market can be used as a way to demonstrate a certain social position, formalizing it through quantitative means.</p>
-<p>Prediction markets in particular are perhaps the clearest instantiation of this logic. They are explicitly designed to concretize beliefs through financial commitments, with the premise that placing money behind a prediction produces a more 'honest' signal than the expression of that prediction alone. In this sense, they represent the apotheosis of market rationality, attaching opinions and perspectives to a price.</p>
-<p>The question is whether or not the resultant price is reliable, and here there is a substantial reason to be cautious. One of the most commonly-cited concerns relates to the presence of 'whales' who have the means to pour a large amount of capital into the market, creating major fluctuations that reflect their own opinions rather than the broader sentiment. There is also the issue of insider trading, where participants with privileged access to information are able to profit from knowledge unavailable to those in the broader market. This also skews results and represents a more structurally serious vulnerability. Similar to 'whales', a prediction market that is being moved by insiders cannot be seen to represent public belief.</p>
-<p>Liquidity constraints compound this further. Prediction markets are still quite niche in the grand scheme of things; in a relatively small market, the absence of sufficient volume means that individual actors can come to exert a disproportionate influence on the signal that the market is intended to produce. Lastly, there is also the question of representation. The userbase of platforms like Polymarket skews rather young, male, and 'online'. Moreover, the types of people most concerned with election outcomes or a Federal Reserve decision are not necessarily representative of an 'average person'. The majority of people do not see a reason to go as far as to transfer money into a cryptocurrency wallet to prove a particular stance, and merely having the opinion in the first place is enough for them. What prediction markets measure, then, may be less of 'what people believe' than 'what a specific demographic of speculators are willing to bet', which is a much narrower claim.</p>
-<p>None of this forecloses the possibility that prediction markets are useful instruments, but their credibility as authoritative signals depends on their context: social conditions, liquidity, and the possible presence of insiders. Polanyi's double movement suggests that markets left to their own devices will eventually provoke the regulatory countermovements they sought to avoid. For prediction markets specifically, the more interesting question may not revolve around regulation, but whether or not such markets can be structured to produce genuinely informative signals in the first place.</p>
-
-<div class="footnotes">
-  <ol>
-    <li id="fn1">"Just How Mighty Are Active Retail Traders?," <i>The Economist</i>, August 21, 2021. <a href="#ref1" class="footnote-backref">↩</a></li>
-    <li id="fn2">"CFTC Orders Tether and Bitfinex to Pay Fines Totaling $42.5 Million," Commodity Futures Trading Commission, October 15, 2021. <a href="#ref2" class="footnote-backref">↩</a></li>
-    <li id="fn3">Billy Bambrough, "'Big News'—Donald Trump Declares 'Crypto Is The Future' After Blowing Up The Bitcoin Price," <i>Forbes</i>, October 15, 2024. <a href="#ref3" class="footnote-backref">↩</a></li>
-    <li id="fn4">Will Weissert, "Harris Announces a New Plan to Empower Black Men as She Tries to Energize Them to Vote for Her," AP News, October 14, 2024. <a href="#ref4" class="footnote-backref">↩</a></li>
-    <li id="fn5">"Framework for 'Investment Contract' Analysis of Digital Assets," Securities & Exchange Commission, n.d. <a href="#ref5" class="footnote-backref">↩</a></li>
-    <li id="fn6">Michael S. Dicke et al., "SEC v. Binance: Court Decides Majority of Claims Can Proceed but Expresses Skepticism on SEC's Application of US Securities Laws to Crypto," Thomson Reuters Practical Law, July 10, 2024. <a href="#ref6" class="footnote-backref">↩</a></li>
-    <li id="fn7">Karl Polanyi, <i>The Great Transformation</i> (Farrar & Rinehart, 1944), 44. <a href="#ref7" class="footnote-backref">↩</a></li>
-    <li id="fn8">Ibid., 66. <a href="#ref8" class="footnote-backref">↩</a></li>
-    <li id="fn9">Ibid., 76. <a href="#ref9" class="footnote-backref">↩</a></li>
-    <li id="fn10">Kyle Chayka, "The Crypto Betting Platform Predicting a Trump Win," <i>The New Yorker</i>, October 23, 2024. <a href="#ref10" class="footnote-backref">↩</a></li>
-    <li id="fn11">"CFTC Orders Event-Based Binary Options Markets Operator to Pay $1.4 Million Penalty," Commodity Futures Trading Commission, January 3, 2022. <a href="#ref11" class="footnote-backref">↩</a></li>
-    <li id="fn12">Polanyi, <i>The Great Transformation</i>, 46. <a href="#ref12" class="footnote-backref">↩</a></li>
-    <li id="fn13">Ibid. <a href="#ref13" class="footnote-backref">↩</a></li>
-  </ol>
-</div>
-`
-      },
-      'projects': {
-        eyebrow: "",
-        title: 'Projects',
-        meta: "",
-        body: `
-<p>A selection of things I made in my own time: little websites, experiments, or one-off builds that were more about curiosity than client work.</p>
-<div class="project-list">
-  <div class="project-card">
-    <h3><a href="https://endozone.github.io/lindyindex/">The Lindy Index</a></h3>
-    <p>An interactive site that explores the Lindy heuristic - the idea that the longer something has been around, the more likely it is to continue - as it applies to publicly-traded companies. Benchmark the basket against the S&P 500, or compare up to three different companies across various industries.</p>
+<div class="toolbar">
+  <div class="controls" id="coControls">
+    <span class="ctl-label">Order</span>
+    <select id="sort">
+      <option value="old">Oldest first</option>
+      <option value="young">Youngest first</option>
+      <option value="az">A to Z</option>
+    </select>
   </div>
 </div>
-`
-      },
-      'research-1': {
-        eyebrow: 'Equity Research (Brief) · February 2026',
-        title: 'Economy Class: How Ryanair’s Business Model Conquered Europe’s Airline Industry',
-        meta: '7 min read',
-        body: `
-<p>A common question that is asked in discussions about the airline industry is, "How do they make money?". And a common answer to this question is that they don't. Airlines are known for running on ultra-thin margins on account of their high operating costs and overhead; the global airline industry's cumulative operating profit margin was only 3.9% in 2025. Budget carriers, however, outperform other airlines on this metric significantly. For instance, Europe's leading low-cost carrier (LCC), Ryanair, has a margin hovering around 14% to 16% as of mid-2025. When compared to legacy airlines like Lufthansa or British Airways, this is an extraordinary feat for a young carrier, nevermind the fact that Ryanair also came to define European budget airlines as a whole, breeding its own competitors within a decade of its inception.</p>
 
-<p>It comes as no surprise that Ryanair pursues an aggressive, no-frills flying policy. Those who have heard Michael O'Leary's impassioned opinions on the airline industry and those who purchase from them, know that he is committed to his bottom line. But the impetus for this stretches further back than his promotion to CEO in 1994. In fact, the low-cost business model was introduced by Southwest Airlines in the 1970s. In a bid to sidestep the tight airline regulations at the time and allow more flexibility for price-setting and flight frequency, founders Herbert Kelleher and Rollin King operated solely within Texas, flying between Dallas, Houston, and San Antonio.</p>
+<div class="chips" id="chips"></div>
 
-<p>Ryanair launched across the pond in 1986, bringing low-cost fares and premium experiences on board their flights to London. They ran the full gamut of in-flight meals, free drinks, and attentive service. However, its main competitors (Aer Lingus, British Airways) were quick to react. Given that these companies had the advantage of scale, Ryanair succumbed to a £2M loss within its first two years of operations.</p>
+<!-- COMPANIES -->
+<section id="companies" class="scene">
+  <div class="ind-head"><div>The company</div><div class="rt">Last &middot; 1d</div><div></div><div class="agehead">Now</div></div>
+  <div class="axis" id="axis"></div>
+  <div id="rows"></div>
+</section>
 
-<p>As CFO of Ryanair, O'Leary visited Southwest headquarters and brought the LCC model back with him, implementing it in 1990. His strategy included purchasing a single fleet of Boeing 737s, increasing flight frequency, and cutting down on amenities. Some LCCs may choose to compete with legacy airlines, promising to offer the best of both worlds (i.e. budget and care). But rather than maintain that balancing act, O'Leary reasoned, Ryanair would be much better off trying to attract more customers through low ticket prices.</p>
+<div class="tip" id="tip"></div>
 
-<p>This was, in fact, a successful strategy.</p>
+<footer>
+  <b>How to read it:</b> Age is measured from each firm's founding year, not its IPO date. "Lindy span" is simply that age projected forward as a rough life expectancy. Sectors map to the trade that drives their demand, so you can weigh both signals at once: a long-lived company sitting inside an ancient-demand industry is where the Lindy effect is likely to be strongest.<br><br>
+  <b>Two caveats:</b> The Lindy effect screens for survivorship, so it tilts toward more mature, slower-growth names. Prices and returns are snapshots pulled from Yahoo Finance (dated above), not a live feed. Not investment advice.
+</footer>
 
-<h3><i>Exhibit 1: Financial Performance</i></h3>
+<script>
+const NOW = 2026;
 
-<figure class="chart-small">
-  <img src="charts/financial_performance.png" alt="Bar and line chart of Ryanair's scheduled revenue, ancillary revenue, and EBITDA from FY2015 to FY2025.">
-</figure>
+let PRICES;  // price snapshot loaded from prices.json at runtime (run pull_prices.py to refresh)
 
-<p>Ryanair's financial performance has shown considerable growth and resilience over the past decade, fully recovering from the pandemic downturn to achieve record revenues. This is in no small part due to their ancillary revenues, which have grown 29% since 2015. In recent years, ancillary revenue share has stabilized around 32-34%, cementing non-ticket sales as an indispensable and substantial component of the company's financial structure.</p>
+// Curated register. Founding years are company origins; tickers verified for US listings.
+const COMPANIES = [
+  {n:"Bank of New York Mellon", t:"BK", y:1784, s:"Banking & credit", note:"The oldest continuously operating bank in the United States.", bio:"Founded in 1784 as the Bank of New York, with Alexander Hamilton drafting its constitution, it was among the very first stocks traded on the New York Stock Exchange. It helped finance the young republic's debt and infrastructure, and through two centuries of consolidation — capped by the 2007 merger with Mellon Financial — became one of the world's largest custody and asset-servicing banks."},
+  {n:"State Street", t:"STT", y:1792, s:"Banking & credit", note:"The second-oldest continuously operating bank in the U.S., chartered the same year the dollar was coined.", bio:"State Street traces its roots to Boston's Union Bank, chartered in 1792. After more than a century as a commercial bank, it reinvented itself as a custodian and asset manager. In 1993, it launched the first U.S. exchange-traded fund, the SPDR S&P 500 (SPY) — now a fixture of modern markets."},
+  {n:"JPMorgan Chase", t:"JPM", y:1799, s:"Banking & credit", note:"Traces its roots to The Manhattan Company, a water utility that became a bank.", bio:"Its lineage begins with The Manhattan Company, founded in 1799 with the purpose of piping clean water to Lower Manhattan, but chartered with a clause that let it use its surplus capital for banking transactions. Over two centuries it absorbed J.P. Morgan & Co., Chase Manhattan, Bank One, and others to become the largest bank in the United States."},
+  {n:"DuPont", t:"DD", y:1802, s:"Metals & materials", note:"Began as a gunpowder mill on the Brandywine, now one of the world's largest science and chemical corporations.", bio:"French émigré Éleuthère Irénée du Pont began milling gunpowder on Delaware's Brandywine Creek in 1802. The company would later become the innovating force behind neoprene, nylon, Teflon, and Kevlar. After its 2017 Dow merger and subsequent splits, it now concentrates on specialty and electronic materials."},
+  {n:"Colgate-Palmolive", t:"CL", y:1806, s:"Soap & personal care", note:"Started as a starch, soap, and candle shop in New York City.", bio:"William Colgate opened a starch, soap and candle works in New York City in 1806. In 1896, his son Samuel Colgate introduces Colgate's Ribbon Dental Cream, the first toothpaste to be packaged in a collapsible tube. It merged with Palmolive-Peet in 1928 to become a global leader in oral, household, and personal care."},
+  {n:"Citigroup", t:"C", y:1812, s:"Banking & credit", note:"Chartered as the City Bank of New York to finance commerce and manage wartime disruption.", bio:"Chartered in 1812 as the City Bank of New York, it financed Manhattan's merchants and pioneered overseas branch banking in the early 20th century. The 1998 merger with Travelers created Citigroup, historically significant for its combination of banking and insurance."},
+  {n:"Deere & Company", t:"DE", y:1837, s:"Agriculture & food", note:"Began when a blacksmith from Vermont created the first commercially successful self-scouring steel plow broke.", bio:"In 1837, the blacksmith John Deere forged a self-scouring steel plow to cut through sticky prairie soil. The company grew into the world's leading maker of agricultural machinery, and its logo remains the oldest continuously used trademark by any Fortune 500 company."},
+  {n:"Procter & Gamble", t:"PG", y:1837, s:"Soap & personal care", note:"Founded after an English candlemaker and an Irish soapmaker married into the same Cincinnati family.", bio:"Candle-maker William Procter and soap-maker James Gamble, brothers-in-law from Cincinnati, formed their partnership in 1837. Ivory soap, Tide, and a large roster of brands made P&G a pioneer of modern advertising, brand management, and consumer-goods conglomeration."},
+  {n:"Stanley Black & Decker", t:"SWK", y:1843, s:"Metals & materials", note:"Began as Stanley's Bolt Manufactory in New Britain, Connecticut.", bio:"Frederick Stanley opened a wrought-iron hardware shop in New Britain, Connecticut in 1843. A series of mergers, culminating in the 2010 union with Black & Decker, made it the world's largest maker of hand and power tools."},
+  {n:"Church & Dwight", t:"CHD", y:1846, s:"Agriculture & food", note:"Began as a small baking soda operation in John Dwight’s New York City kitchen.", bio:"Founded in 1846 by brothers-in-law Dr. Austin Church and John Dwight, the company built its fortune on Arm & Hammer baking soda. The brand was extended significantly beginning in the 1980s, acquiring many other names in household and personal care."},
+  {n:"Altria", t:"MO", y:1847, s:"Tobacco & vice", note:"The U.S. branch of Philip Morris International, which began as a single tobacconist's shop in London.", bio:"The company traces its roots to 1847, when Philip Morris opened a small tobacco shop on London’s Bond Street. It grew into a global empire, revolutionized modern cigarette marketing with Marlboro, and split into two separate entities in 2008: Philip Morris USA (Altria) and Philip Morris International."},
+  {n:"Pfizer", t:"PFE", y:1849, s:"Medicine & apothecary", note:"Founded in 1849 by German cousins Charles Pfizer and Charles Erhart in Brooklyn, New York.", bio:"Cousins Charles Pfizer and Charles Erhart opened a fine-chemicals business in Brooklyn in 1849, known for its production of citric acid. Wartime mass-production of penicillin — and later, Lipitor, Advil, and the COVID-19 vaccine — made it one of the largest drug makers in the world."},
+  {n:"Corning", t:"GLW", y:1851, s:"Glass", note:"Founded in 1851 by Amory Houghton, the company’s roots span from Massachusetts to New York.", bio:"After moving from Somerville, Massachusetts; to Brooklyn, New York; and to Corning, New York, the Corning Flint Glass Co. created encasements for Thomas Edison's early light bulbs. The company’s history of innovation spans over 170 years."},
+  {n:"Wells Fargo", t:"WFC", y:1852, s:"Banking & credit", note:"Founded in 1852 by Henry Wells and William G. Fargo, Wells Fargo started as a secure courier and banking operation to serve California’s Gold Rush.", bio:"Henry Wells and William Fargo founded the express-and-banking company in 1852 to serve California during the Gold Rush, hauling freight and gold dust by stagecoach. Amid the 2008 financial crisis, it acquired Wachovia, transforming into a massive, coast-to-coast retail banking franchise."},
+  {n:"Anheuser-Busch InBev", t:"BUD", y:1852, s:"Brewing & spirits", note:"A struggling St. Louis brewery in the 1850s — transformed by Eberhard Anheuser and his son-in-law Adolphus Busch", bio:"The American brewery dates to 1852 in St. Louis, but it wasn’t until 1864 when Adolphus Busch pioneered pasteurization and refrigerated railcars to ship beer across America without spoiling. A 2008 takeover by Belgium's InBev, and the later SABMiller deal, created the world's largest brewer."},
+  {n:"Bristol-Myers Squibb", t:"BMY", y:1858, s:"Medicine & apothecary", note:"Formed through the merger of two 19th-century American pharmaceutical companies.", bio:"Bristol-Myers Squibb was formed through the historic 1989 merger of two long-standing 19th-century American pharmaceutical companies: Bristol-Myers and E.R. Squibb & Sons. Today, it is a leading global biopharma company specializing in groundbreaking oncology, cardiovascular, and immunology treatments."},
+  {n:"Union Pacific", t:"UNP", y:1862, s:"Transport & freight", note:"Chartered by Lincoln to lay the eastern half of the transcontinental railroad.", bio:"Chartered under Lincoln's 1862 Pacific Railway Act, Union Pacific built the eastern portion of the first transcontinental railroad, meeting the Central Pacific at Promontory, Utah in 1869. It remains one of North America's largest freight railroads."},
+  {n:"General Mills", t:"GIS", y:1866, s:"Agriculture & food", note:"Traces its roots to 1866 when Cadwallader Washburn built his first flour mill in Minneapolis, Minnesota.", bio:"Originating as the Washburn-Crosby company, it became known as General Mills after its 1928 consolidation with several other regional flour milling companies. It has since diversified heavily, but remains a pioneer in the packaged food industry."},
+  {n:"Sherwin-Williams", t:"SHW", y:1866, s:"Metals & materials", note:"Founded in 1866, Sherwin-Williams created the first ready-mixed paint in a resealable can.", bio:"In 1866, Henry Sherwin used his life savings to invest in a Cleveland paint and furnishing supply business. Four years later, he partnered with Edward Williams and A.T. Osborn, to form Sherwin, Williams, & Co. By the 1920s, the company officially became the largest coatings manufacturer in the United States."},
+  {n:"Campbell Soup", t:"CPB", y:1869, s:"Agriculture & food", note:"Campbell's transformed the food industry when chemist John T. Dorrance invented condensed soup in 1897.", bio:"Started in 1869 in Camden, New Jersey, the company achieved a breakthrough in creating condensed soup. By removing water, the company drastically lowered the price of a can from 30 to 10 cents. In 1990, Campbell's soups won a Gold Medallion at the Paris Exposition, which has been featured on their label ever since."},
+  {n:"Brown-Forman", t:"BF.B", y:1870, s:"Brewing & spirits", note:"Founded in Louisville, Kentucky, in 1870, it revolutionized the industry by pioneering the sale of bourbon in sealed glass bottles.", bio:"George Garvin Brown began selling bourbon in sealed glass bottles in Louisville in 1870 to guarantee its quality at a time of widespread tampering. In 1956, it acquired the Jack Daniel's Distillery."},
+  {n:"ExxonMobil", t:"XOM", y:1870, s:"Energy & fuel", note:"The largest surviving heir of John D. Rockefeller's Standard Oil.", bio:"Formed in 1999 when Exxon and Mobil — two direct successors of John D. Rockefeller's 1870 Standard Oil monopoly — merged. Today, ExxonMobil operates globally across oil, gas, chemical, and lubricant divisions."},
+  {n:"Kimberly-Clark", t:"KMB", y:1872, s:"Soap & personal care", note:"Founded in Neenah, Wisconsin, in 1872, Kimberly-Clark transformed from a regional paper mill into a global consumer products powerhouse.", bio:"A Wisconsin paper miller founded in 1872, it eventually developed ‘cellucotton’ in 1914, a highly absorbent cotton substitute that the U.S. Army used for surgical dressings during World War I. It used this material to develop disposable facial tissues, feminine hygiene products, and modern diapers."},
+  {n:"Eli Lilly", t:"LLY", y:1876, s:"Medicine & apothecary", note:"Founded in 1876 in Indianapolis, Indiana, by Civil War veteran and pharmaceutical chemist Colonel Eli Lilly.", bio:"Pharmacist and Civil War colonel Eli Lilly founded the firm in Indianapolis in 1876, insisting on carefully tested, properly labeled medicines. It was first to mass-produce insulin in the 1920s and, a century later, became a leader in diabetes and obesity drugs."},
+  {n:"Chevron", t:"CVX", y:1879, s:"Energy & fuel", note:"Born as Pacific Coast Oil in 1979, another fragment of the Standard Oil estate.", bio:"Founded as Pacific Coast Oil in 1879, it became Standard Oil of California after Rockefeller's trust acquired it, then became independent again following the 1911 breakup. The 1984 merger with Gulf Oil and the 2001 merger with Texaco helped make Chevron a global energy supermajor."},
+  {n:"PPG Industries", t:"PPG", y:1883, s:"Glass", note:"The first commercially successful plate-glass works in the US.", bio:"Pittsburgh Plate Glass, founded in 1883, was the first commercially successful U.S. plate-glass maker. It diversified into paints, coatings and specialty materials and now ranks among the world's largest coatings companies."},
+  {n:"Johnson & Johnson", t:"JNJ", y:1886, s:"Medicine & apothecary", note:"Made the first mass-produced sterile surgical dressings.", bio:"Founded in New Brunswick, New Jersey in 1886, Johnson & Johnson made the first mass-produced sterile surgical dressings as antiseptic surgery took hold. It grew into a diversified health-care giant; in 2023 it spun off its consumer arm (Kenvue) to focus on pharmaceuticals and medical devices."},
+  {n:"Coca-Cola", t:"KO", y:1886, s:"Brewing & spirits", note:"Began as a pharmacist's syrup poured over soda water in Atlanta.", bio:"Atlanta pharmacist John Pemberton concocted the formula in 1886, marketing it as a temperance drink and nerve tonic. Businessman Asa Candler's marketing - and an ingenious franchised bottling system - turned it into the most recognized beverage brand on earth"},
+  {n:"McCormick", t:"MKC", y:1889, s:"Agriculture & food", note:"Founded by 25 year old Willoughby M. McCormick in 1889.", bio:"Founded in Baltimore, McCormick began selling root beer, fruit syrups, and flavor extracts door-to-door from a cellar. Today, the company is a global leader in spices, herbs and seasonings."},
+  {n:"Merck & Co.", t:"MRK", y:1891, s:"Medicine & apothecary", note:"The American arm of a German apothecary dating to the 1660s.", bio:"The U.S. arm of Merck - a small apothecary shop in Darmstadt, Germany - was established in 1891 and became fully independent American property after World War I. It is now one of the largest research-driven drug makers, anchored by vaccines and oncology."},
+  {n:"Hormel Foods", t:"HRL", y:1891, s:"Agriculture & food", note:"Founded in 1891 as a small, independent pork-packing plant", bio:"George Hormel founded his meatpacking business in Austin, Minnesota in 1891. Its invention of SPAM in 1937 made the brand a global icon and wartime staple, and the company has since broadened into branded and convenience foods."},
+  {n:"GE Aerospace", t:"GE", y:1892, s:"Transport & freight", note:"A world-leading provider of jet engines, systems, and services for commercial and military aircraft.", bio:"General Electric formed in 1892 from the merger of Edison's electric company with Thomson-Houston. After decades as a sprawling conglomerate spanning appliances, finance and media, GE split into three companies in 2023-24, with this one operating as an independent aerospace powerhouse."},
+  {n:"Hershey", t:"HSY", y:1894, s:"Agriculture & food", note:"Established in 1894 by Milton S. Hershey", bio:"Inspired by German chocolate-making machinery at the 1893 World’s Columbian Exposition, Hershey sold his Pennsylvania caramel company for $1 million to focus entirely on mass-producing affordable milk chocolate."},
+  {n:"J.M. Smucker", t:"SJM", y:1897, s:"Agriculture & food", note:"Started pressing apple butter from a single cider mill in Ohio.", bio:"Jerome Smucker began pressing apple butter from a cider mill in Orrville, Ohio in 1897. The family-led company grew through jams and jellies and later major acquisitions in coffee (Folgers) and pet food."},
+  {n:"3M", t:"MMM", y:1902, s:"Metals & materials", note:"A failed mining venture that pivoted to sandpaper, then tape, then everything.", bio:"Founded in 1902 as Minnesota Mining and Manufacturing to mine corundum for grinding wheels, but 3M found the deposit nearly worthless and pivoted to sandpaper. A culture of relentless invention produced masking tape, Scotch tape, Post-it Notes and tens of thousands of other products."},
+  {n:"Archer-Daniels-Midland", t:"ADM", y:1902, s:"Agriculture & food", note:"This linseed crushing company was founded in Minneapolis by John W. Daniels.", bio:"Archer-Daniels-Midland began in 1902 crushing flaxseed for linseed oil. It grew into one of the world's largest agricultural processors and commodity traders, turning grain and oilseeds into food ingredients, animal feed and biofuel."}, 
+  {n:"Newmont", t:"NEM", y:1921, s:"Gold & precious metals", note:"The world's largest gold miner, founded as a holding company in 1921.", bio:"Founded by Colonel William Boyce Thompson, Newmont began concentrating on mining in 1929. Through major deals including Goldcorp and Newcrest, it became the world's largest gold producer."},
+  {n:"Caterpillar", t:"CAT", y:1925, s:"Metals & materials", note:"Established in 1925 from the merger of Holt Manufacturing and C.L. Best Tractor Co.", bio:"The Holt and Best tractor companies were pioneers of the track-laying 'caterpillar' crawler that spread loads across soft ground. After their merger, the company went on to become the world's leading maker of construction and mining equipment."},
+];
 
-<p>However, the recent combination of slowing revenue growth (3.8%) and a sharp decline in EBITDA (-11.8%) in 2025 signals a shift from the high-growth, high-margin recovery phase into a period where cost control and efficiency will be critical to maintaining or improving profitability.</p>
+// The ancient-trade dimension: how far back the underlying human demand runs.
+const INDUSTRIES = [
+  {n:"Agriculture & food", start:-10000, note:"Fundamental to human survival, demand is ever-present."},
+  {n:"Brewing & spirits", start:-7000, note:"Fermented drink is one of humanity's oldest manufactured goods."},
+  {n:"Metals & materials", start:-6000, note:"Provides many of the raw materials required for global infrastructure, manufacturing, and technological development."},
+  {n:"Gold & precious metals", start:-4000, note:"Historically serves as a primary store of value and medium of exchange."},
+  {n:"Tobacco & vice", start:-4000, note:"A stubbornly durable category."},
+  {n:"Energy & fuel", start:-4000, note:"The critical utility underpinning all global economic activity."},
+  {n:"Glass", start:-3500, note:"Beginning in ancient Mesopotamia and Egypt, it now has critical applications in modern architecture, optics, and consumer electronics."},
+  {n:"Medicine & apothecary", start:-3000, note:"Demonstrates uninterrupted historical demand, evolving continuously from early pharmacopoeia to modern biotechnology."},
+  {n:"Soap & personal care", start:-2800, note:"Rooted in fundamental public health and sanitation requirements, demand has persisted for millennia."},
+  {n:"Banking & credit", start:-2000, note:"The essential infrastructure for capital allocation. Core mechanisms of deposit-taking, lending, and risk management have facilitated economic expansion since antiquity."},
+  {n:"Transport & freight", start:-2000, note:"The logistical backbone of global commerce. From ancient trade routes to modern supply chains, it enables the movement of goods and people."},
+];
 
-<h3><i>Exhibit 2: Total Passengers Carried</i></h3>
+const SECTORS = [...new Set(COMPANIES.map(c=>c.s))].sort();
+let activeSectors = new Set();
 
-<figure class="chart-small">
-  <img src="charts/total_passengers.png" alt="Line or bar chart comparing total passengers carried by Ryanair, Lufthansa, IAG, Air France-KLM, and easyJet from 1990 to 2025.">
-</figure>
+// ---- timeline scales ----
+const maxAge = Math.max(...COMPANIES.map(c=>NOW-c.y));
+const C_START = 1750, C_END = NOW;                          // companies axis: founding -> now, bars run flush to the right edge
 
-<p>Throughout the years, Ryanair has managed to become the most popular airline in Europe, having transported 206 million people in 2025, arguably the best recovery among comparable airlines, both budget and legacy, in the post-pandemic landscape. Ryanair's passenger volume is substantially higher than its closest competitors: 57% higher than the second-largest airline, Lufthansa (131.3 million), and more than double the volume of its main budget rival, easyJet (100 million).</p>
+const pct = (val, lo, hi) => ((val - lo) / (hi - lo)) * 100;
 
-<p>This shows that Ryanair has established its lead and has continually accelerated its growth since O'Leary implemented the LCC model, even outpacing the expansion of legacy airlines such as Lufthansa and Air France. This comparison highlights Ryanair's massive scale, which is the key factor driving its high revenues.</p>
+function el(tag, cls, html){const e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e;}
 
-<h3><i>Exhibit 3: Ancillary Revenue Per Passenger (ARPP)</i></h3>
+// ---- stats ----
+function renderStats(){
+  const ages = COMPANIES.map(c=>NOW-c.y).sort((a,b)=>a-b);
+  const median = ages[Math.floor(ages.length/2)];
+  const oldest = COMPANIES.reduce((a,b)=> (NOW-a.y)>(NOW-b.y)?a:b);
+  const data=[
+    [COMPANIES.length,"names tracked"],
+    [NOW-oldest.y+" yrs",oldest.n.split(" ")[0]+" tops the list"],
+    [median+" yrs","median age"],
+    [SECTORS.length,"ancient trades"],
+  ];
+  const box=document.getElementById("stats"); box.innerHTML="";
+  data.forEach(([n,l])=>{const s=el("div","stat"); s.appendChild(el("div","n",n)); s.appendChild(el("div","l",l)); box.appendChild(s);});
+}
 
-<figure class="chart-small">
-  <img src="charts/arpp.png" alt="Chart comparing ancillary revenue per passenger for Ryanair, Wizz Air, and easyJet from FY2021 to FY2025.">
-</figure>
+// ---- performance panel ----
+function fmtPct(x){return (x>=0?"+":"")+(x*100).toFixed(1)+"%";}
+function annualized(x,yrs){return Math.pow(1+x,1/yrs)-1;}
+function renderPerf(){
+  document.getElementById("perfAsof").textContent="as of "+PRICES.asof;
+  document.getElementById("perfN").textContent=PRICES.n;
+  const periods=[["ytd","YTD 2026",null],["1y","1 year",1],["5y","5 years",5],["10y","10 years",10]];
+  const tbl=document.getElementById("perfTable"); tbl.innerHTML="";
+  const head=el("div","perf-row head");
+  ["Period","Lindy Index","S&P 500","Spread"].forEach((h,i)=>head.appendChild(el("div","perf-cell"+(i?" num":""),h)));
+  tbl.appendChild(head);
+  periods.forEach(([k,label,yrs])=>{
+    const li=PRICES.index[k], sp=PRICES.sp500.ret[k], spread=li-sp;
+    const row=el("div","perf-row");
+    row.appendChild(el("div","perf-cell","<span class='lbl'>"+label+"</span>"));
+    let liH="<span class='big "+(li>=0?"up":"down")+"'>"+fmtPct(li)+"</span>";
+    let spH="<span class='mid'>"+fmtPct(sp)+"</span>";
+    if(yrs&&yrs>1){
+      liH+="<span class='ann'>"+fmtPct(annualized(li,yrs))+" /yr</span>";
+      spH+="<span class='ann'>"+fmtPct(annualized(sp,yrs))+" /yr</span>";
+    }
+    row.appendChild(el("div","perf-cell num",liH));
+    row.appendChild(el("div","perf-cell num",spH));
+    const pts=(Math.abs(spread)*100).toFixed(1);
+    row.appendChild(el("div","perf-cell num","<span class='spread "+(spread>=0?"up":"down")+"'>"+(spread>=0?"▲ ":"▼ ")+pts+" pts</span>"));
+    tbl.appendChild(row);
+  });
+}
 
-<p>Ancillary revenue per passenger (ARPP) is a standard measure for comparing the efficiency of an airline's ancillary strategy across all of its carriers, showing how much an airline makes from each customer without involving ticket revenue: baggage fees, priority boarding costs, in-flight WiFi, and so on. This is the highest-margin revenue, but Ryanair is not a winner here in terms of sheer euro-amount.</p>
+// ---- compare chart ----
+const COMPARE_COLORS=["#74b59c","#cda557","#c5765a"];
+const DEFAULT_COMPARE_TICKERS=["BK","STT","JPM"];
 
-<p>It should be noted Ryanair carries far more passengers than Wizz or easyJet. In 2025, easyJet carried half the passengers that Ryanair did that year; Wizz carried less than a third. This dilutes Ryanair's overall high ancillary revenue into a relatively lower per-person value, but what is interesting is this metric's stability compared to other airlines.</p>
+function populateComparisonSelectors(){
+  const selects=document.querySelectorAll(".compare-select");
+  selects.forEach((sel,idx)=>{
+    const current=sel.value || DEFAULT_COMPARE_TICKERS[idx] || "";
+    sel.innerHTML="<option value=''>Select a company</option>";
+    COMPANIES.forEach(c=>{
+      const opt=document.createElement("option");
+      opt.value=c.t; opt.textContent=c.n; sel.appendChild(opt);
+    });
+    sel.value=current;
+  });
+}
 
-<p>Ryanair's ancillary revenue has hovered around €22 per person for the past five years. Wizz's higher ARPP suggests they are better at upselling or charging higher prices for ancillary items to their smaller passenger base, achieving a greater revenue yield per person. Ryanair, by contrast, focuses on driving the highest possible passenger numbers (i.e. volume) while maintaining a lower, but very stable, per-person yield.</p>
+function renderComparisonChart(){
+  const box=document.getElementById("compareChart");
+  if(!PRICES||!PRICES.hist||!PRICES.hist.by){
+    box.innerHTML="<div class='compare-note'>Price history will appear here once the data is loaded.</div>";
+    return;
+  }
 
-<p>As Wizz experiences stronger passenger growth, its ARPP presses downwards. As the second-largest LCC in Europe, easyJet provides us with a slightly more comparable example, but Ryanair's sheer size makes this an imbalanced playing field.</p>
+  const selectedTickers=[...document.querySelectorAll(".compare-select")].map(sel=>sel.value).filter(Boolean);
+  if(selectedTickers.length===0){
+    box.innerHTML="<div class='compare-note'>Pick up to three Lindy companies to compare their growth.</div>";
+    return;
+  }
 
-<p>Nonetheless, the extraordinary stability of Ryanair's ARPP suggests a few things. First, that Ryanair is organized when it comes to ancillary fee integration: their fees for baggage, seat selection, priority boarding, and so on, are consistently applied across all of their routes. Ryanair has also maximized their ancillary pricing structure in this regard. Their ancillary fees hit a comfortable middle ground, which is to say that they are high enough to generate significant revenue, but still low enough to not deter the vast majority of their customer base from flying with them. This also suggests that customer behavior regarding ancillary purchases is predictable and has not been significantly influenced by market changes or competitive pressure (e.g. from other airlines).</p>
+  const series=selectedTickers.map((tk,i)=>{
+    const company=COMPANIES.find(c=>c.t===tk);
+    const vals=PRICES.hist.by[tk]||[];
+    const base=vals.find(v=>v!=null&&!Number.isNaN(v))||1;
+    const normalized=vals.map(v=>v!=null&&!Number.isNaN(v)?(100*v/base):null);
+    return {tk, name:company?company.n:tk, values:normalized, color:COMPARE_COLORS[i]};
+  }).filter(s=>s.values.length);
 
-<p>Ryanair's passengers more than doubled from 97.1 million in 2022 to 206.5 million (estimated) in 2025. The fact that ARPP ranged from a narrow €21.80 to €22.85 during this period means their total ancillary revenue is increasing at the same rate as their passenger count, indicating that the airline has handled its rapid growth with commendable efficiency.</p>
+  if(series.length===0){
+    box.innerHTML="<div class='compare-note'>No comparable price history is available for the selected names.</div>";
+    return;
+  }
 
-<p>Contrary to the old adage, it <i>is</i> possible for an airline to make money. Ryanair's high margins in particular are generated by maximizing the sheer number of customers, which creates large total ancillary revenues even with a lower, but consistent, per-passenger yield. In other words, the company's success is defined by scale and the efficient monetization of that scale.</p>
+  const labels=PRICES.hist.months||[];
+  const W=940,H=340,padL=66,padR=54,padT=18,padB=56;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const allValues=series.flatMap(s=>s.values.filter(v=>v!=null));
+  const vmin=Math.min(...allValues,100), vmax=Math.max(...allValues,100);
+  const raw=((vmax-vmin)||1)/4, mag=Math.pow(10,Math.floor(Math.log10(raw)));
+  const step=[1,2,2.5,5,10].map(m=>m*mag).find(s=>s>=raw)||10*mag;
+  const lo=Math.floor(vmin/step)*step, hi=Math.ceil(vmax/step)*step;
+  const X=i=> padL + (labels.length<=1?0:(i/(labels.length-1))*plotW);
+  const Y=v=> padT + plotH - ((v-lo)/(hi-lo))*plotH;
 
-<p><a href="https://www.bbc.com/news/articles/c620506dvmjo">In 2025, the average cost of a Ryanair flight was €44</a>, comparable to a two-hour regional train ticket. Due to Ryanair's dynamic booking system, where fares remain relatively high until the booking window is about to close, fares can be pushed down to as little as €20.</p>
+  const makePath=(values)=>{
+    let d="";
+    values.forEach((v,i)=>{
+      if(v==null) return;
+      const x=X(i).toFixed(1), y=Y(v).toFixed(1);
+      d += (d ? "L" : "M") + x + " " + y + " ";
+    });
+    return d.trim();
+  };
 
-<p>While these fares may seem unsustainable, Ryanair generates profit through ancillary fees, keeping ticket prices low enough to attract travellers. Operationally, the vast majority of their flights are short-haul; shorter travel times allow planes to make multiple trips in a day, creating more opportunities for revenue. By utilizing secondary or regional airports for these trips (mainly Dublin, London Stansted, and Milan Bergamo), Ryanair also minimizes landing fees and increases turnaround time, resulting in even lower costs for the consumer.</p>
+  let grid="";
+  for(let v=lo; v<=hi+1e-6; v+=step){
+    const y=Y(v).toFixed(1), lab=step<1?v.toFixed(1):Math.round(v);
+    grid+="<line class='grid' x1='"+padL+"' y1='"+y+"' x2='"+(padL+plotW)+"' y2='"+y+"'/>";
+    grid+="<text class='axlab' x='"+(padL-10)+"' y='"+(+y+3).toFixed(1)+"' text-anchor='end'>"+lab+"</text>";
+  }
 
-<p>The company has achieved enormous success in scaling its business using these tactics, but not without blowback. A <a href="https://yougov.com/en-gb/articles/48900-ryanairs-consideration-scores-hold-steady-despite-low-consumer-perception-scores">2024 YouGov poll</a> about the Ryanair brand shows a -32% 'impression' score and -40% 'quality' score, but a positive 24.8% 'consideration' score, meaning that although customers have a very poor opinion of the airline, many of them would still consider booking their next flight with Ryanair (note that the average consideration score for other airlines is 14.1%). Such is the power of their competitive pricing system.</p>
+  let xlab="";
+  labels.forEach((lab,i)=>{const yr=lab.slice(0,4); if(lab.slice(5)==="01"&&(+yr)%2===0)
+    xlab+="<text class='axlab' x='"+X(i).toFixed(1)+"' y='"+(H-16)+"' text-anchor='middle'>"+yr+"</text>";});
 
-<p>In a way, Ryanair understands that what passengers value more than the journey is what awaits them at their destination: a music festival, a sporting event, a chance to see friends and family, and so on. This opens up to an interesting aspect of consumer behavior, where the value proposition is not in the product being sold, but in its latent potential. The airline certainly capitalized on this in the years following the pandemic, when the prospect of travel was irresistible for many. As the landscape stabilizes, however, Ryanair will need a strategy to retain their competitive pricing: perhaps through an increase in passenger volume, or an even further optimization of its high-margin revenue streams to sustain the current level of profitability and fend off its budget competitors.</p>
-`
-      },
+  const lines=series.map((s,i)=>{
+    const path=makePath(s.values);
+    const last=s.values.filter(v=>v!=null).slice(-1)[0];
+    const lastX=X(s.values.length-1);
+    const lastY=Y(last!=null?last:100);
+    return "<g>"+
+      "<path class='lineL' d='"+path+"' style='stroke:"+s.color+"'/>"+
+      "<circle class='dotL' cx='"+lastX.toFixed(1)+"' cy='"+lastY.toFixed(1)+"' r='3.4' style='fill:"+s.color+";stroke:var(--ink)'/>"+
+      (last!=null?"<text class='endL' x='"+(lastX+6).toFixed(1)+"' y='"+(lastY+3).toFixed(1)+"' style='fill:"+s.color+"'>"+Math.round(last)+"</text>":"")+
+      "</g>";
+  }).join("");
+
+  const legend=series.map((s,i)=>"<span class='leg'><span class='sw' style='border-color:"+s.color+"'></span><span class='val'>"+s.name+"</span></span>").join("");
+  box.innerHTML="<div class='compare-legend'>"+legend+"</div>"+
+    "<svg id='compareSvg' class='chart' viewBox='0 0 "+W+" "+(H+24)+"' preserveAspectRatio='xMidYMid meet'>"+
+    grid+xlab+"<text class='axtitle' x='"+((padL+plotW)/2)+"' y='"+(H+12)+"' text-anchor='middle'>Year</text>"+
+    "<text class='axtitle' x='18' y='"+(padT+plotH/2)+"' text-anchor='middle' transform='rotate(-90 18 "+(padT+plotH/2)+")'>Growth, indexed to 100</text>"+
+    lines+
+    "<line id='compareGuide' x1='0' y1='"+padT+"' x2='0' y2='"+(padT+plotH)+"' stroke='rgb(160,160,160)' stroke-width='1' stroke-dasharray='4 4' style='opacity:0.5'/>"+
+    "<g id='compareMarkers'></g>"+
+    "<rect id='compareHover' x='"+padL+"' y='"+padT+"' width='"+plotW+"' height='"+plotH+"' fill='transparent' style='cursor:crosshair'/>"+
+    "</svg>";
+
+  const svgEl=document.getElementById("compareSvg");
+  const hit=document.getElementById("compareHover");
+  const guide=document.getElementById("compareGuide");
+  const markers=document.getElementById("compareMarkers");
+  if(svgEl&&hit&&guide){
+    hit.addEventListener("mousemove",e=>{
+      const r=svgEl.getBoundingClientRect();
+      let i=Math.round(((e.clientX-r.left)/r.width*W-padL)/plotW*(labels.length-1));
+      i=Math.max(0,Math.min(labels.length-1,i));
+      const x=X(i);
+      guide.setAttribute("x1",x); guide.setAttribute("x2",x); guide.style.opacity="1";
+      const points=series.map(s=>{
+        const v=s.values[i];
+        if(v==null) return "";
+        const y=Y(v);
+        return "<circle cx='"+x.toFixed(1)+"' cy='"+y.toFixed(1)+"' r='3.2' fill='"+s.color+"' stroke='var(--ink)' stroke-width='1.2'/>";
+      }).filter(Boolean).join("");
+      if(markers) markers.innerHTML=points;
+      const label=labels[i]||"";
+      const rows=series.map(s=>{
+        const v=s.values[i];
+        const val=v==null?"—":v.toFixed(1);
+        return "<div class='r'><span style='color:"+s.color+"'>"+s.name+"</span><span>"+val+"</span></div>";
+      });
+      tip.innerHTML="<h4>"+(label?label:"Hover")+"</h4>"+rows.join("");
+      tip.style.opacity="1";
+      let xPos=e.clientX+16, yPos=e.clientY+16;
+      if(xPos+300>window.innerWidth) xPos=e.clientX-300;
+      if(yPos+140>window.innerHeight) yPos=e.clientY-140;
+      tip.style.left=xPos+"px"; tip.style.top=yPos+"px";
+    });
+    hit.addEventListener("mouseleave",()=>{
+      guide.style.opacity="0";
+      if(markers) markers.innerHTML="";
+      tip.style.opacity="0";
+    });
+  }
+}
+
+function renderChips(){
+  const box=document.getElementById("chips"); box.innerHTML="";
+  const all=el("button","chip"+(activeSectors.size===0?" on":""),"All trades");
+  all.onclick=()=>{activeSectors.clear(); renderChips(); renderRows();};
+  box.appendChild(all);
+  SECTORS.forEach(s=>{
+    const c=el("button","chip"+(activeSectors.has(s)?" on":""),s);
+    c.onclick=()=>{activeSectors.has(s)?activeSectors.delete(s):activeSectors.add(s); renderChips(); renderRows();};
+    box.appendChild(c);
+  });
+}
+
+// ---- axes ----
+function renderAxis(){
+  const ax=document.getElementById("axis"); ax.innerHTML="";
+  [1800,1850,1900,1950,2000].forEach(yr=>{
+    const t=el("div","tick"+(yr===NOW?" now":"")); t.style.left=pct(yr,C_START,C_END)+"%";
+    t.appendChild(el("span",null,String(yr))); ax.appendChild(t);
+  });
+}
+// ---- company rows ----
+function renderRows(){
+  const sort=document.getElementById("sort").value;
+  let list=COMPANIES.filter(c=> activeSectors.size===0 || activeSectors.has(c.s));
+  if(sort==="old") list.sort((a,b)=>a.y-b.y);
+  else if(sort==="young") list.sort((a,b)=>b.y-a.y);
+  else list.sort((a,b)=>a.n.localeCompare(b.n));
+
+  const box=document.getElementById("rows"); box.innerHTML="";
+  list.forEach(c=>{
+    const age=NOW-c.y;
+    const row=el("div","row");
+    const meta=el("div","meta");
+    const top=el("div","top");
+    top.appendChild(el("div","nm",c.n));
+    top.appendChild(el("div","tk mono",c.t));
+    meta.appendChild(top);
+    meta.appendChild(el("div","sub",c.s+" &middot; est. "+c.y));
+    row.appendChild(meta);
+
+    const p=PRICES&&PRICES.constituents[c.t];
+    const pcell=el("div","pcell");
+    if(p){
+      pcell.appendChild(el("div","px","$"+p.price.toFixed(2)));
+      const dir=p.chg>=0?"up":"down";
+      pcell.appendChild(el("div","pchg "+dir,(p.chg>=0?"▲ ":"▼ ")+Math.abs(p.chg).toFixed(2)+"%"));
+    }
+    row.appendChild(pcell);
+
+    const track=el("div","track");
+    const lLeft=pct(c.y,C_START,C_END);
+    const lived=el("div","bar lived"); lived.style.left=lLeft+"%"; lived.style.width=(100-lLeft)+"%";
+    track.append(lived);
+    row.appendChild(track);
+
+    const agecell=el("div","agecell"); agecell.appendChild(el("div","agechip mono",age+"y"));
+    row.appendChild(agecell);
+
+    const tipRows=[["Founded",c.y],["Age",age+" years"],["Trade",c.s]];
+    if(p) tipRows.push(["Last price","$"+p.price.toFixed(2)],["1-yr return",(p.ret["1y"]>=0?"+":"")+(p.ret["1y"]*100).toFixed(1)+"%"]);
+    const tipData={title:c.n+" ("+c.t+")", rows:tipRows, note:"Click for price history & the full story."};
+    [meta,pcell,track,agecell].forEach(z=>bindTip(z,tipData));
+    box.appendChild(row);
+
+    const detail=el("div","detail");
+    row.onclick=()=>{
+      const wasOpen=detail.classList.contains("open");
+      document.querySelectorAll("#rows .detail.open").forEach(d=>d.classList.remove("open"));
+      document.querySelectorAll("#rows .row.open").forEach(r=>r.classList.remove("open"));
+      if(!wasOpen){
+        if(!detail.dataset.built){ renderDetail(c,detail); detail.dataset.built="1"; }
+        detail.classList.add("open"); row.classList.add("open");
+      }
     };
+    box.appendChild(detail);
+  });
+}
 
-    function toggleGroup(id) {
-      document.getElementById('group-' + id).classList.toggle('open');
-    }
+// ---- company detail panel ----
+function priceChartSVG(tk){
+  const Hd=PRICES&&PRICES.hist; if(!Hd||!Hd.by[tk]) return "<div class='nochart'>No price history available.</div>";
+  const v=Hd.by[tk], t=Hd.months, n=v.length;
+  const W=540,H=210,padL=48,padR=16,padT=12,padB=26;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const vmin=Math.min(...v), vmax=Math.max(...v);
+  const raw=((vmax-vmin)||1)/4, mag=Math.pow(10,Math.floor(Math.log10(raw)));
+  const step=[1,2,2.5,5,10].map(m=>m*mag).find(s=>s>=raw)||10*mag;
+  const lo=Math.max(0,Math.floor(vmin/step)*step), hi=Math.ceil(vmax/step)*step;
+  const X=i=> padL + (n<=1?0:(i/(n-1))*plotW);
+  const Y=val=> padT + plotH - ((val-lo)/(hi-lo))*plotH;
+  let grid="";
+  for(let val=lo; val<=hi+1e-6; val+=step){
+    const y=Y(val).toFixed(1), lab=step<1?val.toFixed(1):Math.round(val);
+    grid+="<line class='grid' x1='"+padL+"' y1='"+y+"' x2='"+(padL+plotW)+"' y2='"+y+"'/>";
+    grid+="<text class='axlab' x='"+(padL-8)+"' y='"+(+y+3).toFixed(1)+"' text-anchor='end'>$"+lab+"</text>";
+  }
+  let xlab="";
+  t.forEach((lab,i)=>{const yr=lab.slice(0,4); if(lab.slice(5)==="01"&&(+yr)%2===0)
+    xlab+="<text class='axlab' x='"+X(i).toFixed(1)+"' y='"+(H-7)+"' text-anchor='middle'>"+yr+"</text>";});
+  const line=v.map((val,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(val).toFixed(1)).join(" ");
+  const area=line+" L"+X(n-1).toFixed(1)+" "+(padT+plotH).toFixed(1)+" L"+X(0).toFixed(1)+" "+(padT+plotH).toFixed(1)+" Z";
+  const last=v[n-1];
+  return "<svg class='chart pchart' viewBox='0 0 "+W+" "+H+"' preserveAspectRatio='xMidYMid meet'>"+
+    grid+xlab+
+    "<path class='pricearea' d='"+area+"'/><path class='priceline' d='"+line+"'/>"+
+    "<circle class='dotL' cx='"+X(n-1).toFixed(1)+"' cy='"+Y(last).toFixed(1)+"' r='3'/>"+
+    "<text class='endL' x='"+(X(n-1)-5).toFixed(1)+"' y='"+(Y(last)-7).toFixed(1)+"' text-anchor='end'>$"+last.toFixed(2)+"</text>"+
+    "</svg>";
+}
+function renderDetail(c,panel){
+  const p=(PRICES&&PRICES.constituents[c.t])||{}, r=p.ret||{}, age=NOW-c.y;
+  const ret=x=> x==null?"—":"<span class='"+(x>=0?"up":"down")+"'>"+(x>=0?"+":"")+(x*100).toFixed(1)+"%</span>";
+  const facts=[["Founded",c.y],["Age",age+" yrs"],["Trade",c.s]];
+  const rets=[
+    ["Last",p.price!=null?"$"+p.price.toFixed(2):"—"],
+    ["1-yr",ret(r["1y"])],["5-yr",ret(r["5y"])],["10-yr",ret(r["10y"])],
+  ];
+  panel.innerHTML=
+    "<div class='detail-inner'><div class='detail-grid'>"+
+      "<div class='detail-left'>"+
+        "<p class='detail-bio'>"+(c.bio||c.note||"")+"</p>"+
+        "<div class='detail-facts'>"+facts.map(f=>"<div class='fct'><span>"+f[0]+"</span><b>"+f[1]+"</b></div>").join("")+"</div>"+
+        "<div class='detail-rets'>"+rets.map(f=>"<div class='fct'><span>"+f[0]+"</span><b>"+f[1]+"</b></div>").join("")+"</div>"+
+        "<div class='proj'>"+
+          "<div class='proj-cap'>Lindy projection</div>"+
+          "<div class='proj-bar'><div class='pb-lived'></div><div class='pb-shadow'></div><div class='pb-now'></div></div>"+
+          "<div class='proj-lab'><span>"+c.y+"</span><span class='nowlab'>now "+NOW+"</span><span>~"+(NOW+age)+"</span></div>"+
+          "<p class='proj-note'>"+age+" years already endured &mdash; by the Lindy heuristic, a claim to roughly "+age+" more, to about "+(NOW+age)+".</p>"+
+        "</div>"+
+      "</div>"+
+      "<div class='detail-right'>"+
+        "<div class='pchart-title'>Share price &middot; monthly &middot; last 10 years</div>"+
+        priceChartSVG(c.t)+
+      "</div>"+
+    "</div></div>";
+}
 
-    function loadPiece(id, el) {
-      const p = pieces[id];
-      if (!p) return;
-      document.getElementById('content').innerHTML = `
-        <div class="eyebrow">${p.eyebrow}</div>
-        <h1>${p.title}</h1>
-        <div class="meta">${p.meta}</div>
-        ${p.body}
-      `;
-      document.querySelectorAll('.nav-list li').forEach(li => li.classList.remove('active'));
-      if (el) el.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+// ---- tooltip ----
+const tip=document.getElementById("tip");
+function bindTip(node,data){
+  node.addEventListener("mousemove",e=>{
+    tip.innerHTML="<h4>"+data.title+"</h4>"+
+      data.rows.map(r=>"<div class='r'><span>"+r[0]+"</span><span>"+r[1]+"</span></div>").join("")+
+      (data.note?"<div class='note'>"+data.note+"</div>":"");
+    tip.style.opacity="1";
+    let x=e.clientX+16, y=e.clientY+16;
+    if(x+290>window.innerWidth) x=e.clientX-290;
+    if(y+150>window.innerHeight) y=e.clientY-150;
+    tip.style.left=x+"px"; tip.style.top=y+"px";
+  });
+  node.addEventListener("mouseleave",()=>tip.style.opacity="0");
+}
 
-    function loadHome() {
-      document.getElementById('content').innerHTML = home;
-      document.querySelectorAll('.nav-list li').forEach(li => li.classList.remove('active'));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+function setPerfView(view){
+  document.getElementById("perfViewTable").classList.toggle("hidden", view!=="table");
+  document.getElementById("perfViewCompare").classList.toggle("hidden", view!=="compare");
+  const title=document.querySelector(".perf-title");
+  const toggle=document.getElementById("perfViewToggle");
+  if(title){
+    title.innerHTML=view==="table"?"The Lindy Index <em>vs.</em> the S&amp;P 500":"Compare up to <em>three</em> companies";
+  }
+  if(toggle){
+    toggle.setAttribute("data-view", view==="table"?"compare":"table");
+    toggle.textContent=view==="table"?"Compare companies":"vs. the S&P 500";
+    toggle.classList.toggle("on", view==="compare");
+    toggle.setAttribute("aria-pressed", view==="compare"?"true":"false");
+  }
+  if(view==="compare") renderComparisonChart();
+}
 
-    // initial state
-    loadHome();
-    document.getElementById('group-essays').classList.add('open');
-  </script>
+// ---- compare controls ----
+document.querySelectorAll(".compare-select").forEach(sel=>{
+  sel.addEventListener("change",()=>{
+    const seen=new Set();
+    document.querySelectorAll(".compare-select").forEach(other=>{
+      const v=other.value;
+      if(v && seen.has(v)) other.value="";
+      else if(v) seen.add(v);
+    });
+    renderComparisonChart();
+  });
+});
+document.getElementById("compareReset").addEventListener("click",()=>{
+  document.querySelectorAll(".compare-select").forEach((sel,idx)=>{ sel.value=DEFAULT_COMPARE_TICKERS[idx]||""; });
+  renderComparisonChart();
+});
+document.getElementById("perfViewToggle").addEventListener("click",()=>{
+  const next=document.getElementById("perfViewToggle").getAttribute("data-view")||"compare";
+  setPerfView(next);
+});
+
+document.getElementById("sort").onchange=renderRows;
+
+// ---- init ----
+// PRICES-independent scaffolding renders immediately; price data loads from prices.json.
+renderStats(); renderChips(); renderAxis();
+populateComparisonSelectors(); setPerfView("table");
+fetch("prices.json")
+  .then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+  .then(data=>{ PRICES=data; renderPerf(); renderRows(); renderComparisonChart(); })
+  .catch(err=>{
+    document.getElementById("perfTable").innerHTML=
+      "<div class='nochart'>Couldn't load prices.json ("+err.message+"). "+
+      "Serve the folder over http (e.g. <b>python -m http.server</b>) rather than opening the file directly.</div>";
+    renderRows();   // the register still renders, just without price data
+  });
+</script>
 </body>
 </html>
